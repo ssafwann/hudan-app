@@ -29,26 +29,6 @@ import SwiftUI
         self.hadithService = hadithService
     }
     
-    // Refresh the current hadith (reselect the daily hadith)
-    func refreshHadith() {
-        isLoading = true
-        hasError = false
-        
-        // Short delay to allow UI to show loading state if needed
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-            guard let self = self else { return }
-            
-            do {
-                self.hadithService.selectDailyHadith()
-                self.isLoading = false
-            } catch {
-                self.hasError = true
-                self.errorMessage = "Failed to refresh hadith: \(error.localizedDescription)"
-                self.isLoading = false
-            }
-        }
-    }
-    
     // Get a random hadith (different from the current one)
     func getRandomHadith() -> Hadith? {
         isLoading = true

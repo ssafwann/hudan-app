@@ -109,7 +109,7 @@ import SwiftUI
         return utcCalendar.date(from: utcComponents) ?? now
     }
     
-    // Get a random hadith (useful for manual refresh)
+    // Get a random hadith (different from the current one)
     func getRandomHadith() -> Hadith? {
         guard !allHadiths.isEmpty else { return nil }
         
