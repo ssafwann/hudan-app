@@ -1,14 +1,18 @@
+// main hadith display
+
 import SwiftUI
 
 // AlQuranIndoPakbyQuranWBW
 // EBGaramond-Regular
 // EBGaramondRoman-SemiBold
 // KFGQPCHAFSUthmanicScript-Regula
+// Georgia
+// HelveticaNeue
 
 struct ContentView: View {
     var body: some View {
         VStack {
-            Text("Daily Hadith!")
+            Text("Hudan App")
                 .font(.custom("EBGaramond-Regular", size: 44))
         }
     }
