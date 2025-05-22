@@ -11,22 +11,23 @@ struct HeaderView: View {
             // Left column - date, title, and tagline
             VStack(alignment: .leading, spacing: 0) {
                 // Date with calendar icon
-                HStack(spacing: 8) {
-                    Image(systemName: "calendar")
-                        .foregroundColor(Color("SecondaryGreen"))
-                        .font(.system(size: 14))
+                HStack(spacing: 6) {
+                    Image("CalendarIcon")
+                        .resizable()
+                          .frame(width: 18, height: 18)
                     
                     Text(dateString)
-                        .font(.custom("HelveticaNeue-Regular", size: 16))
+                        .font(.custom("HelveticaNeue-Regular", size: 14))
                         .foregroundColor(Color("LightText"))
+                        .kerning(-0.25)
                 }
                 .padding(.bottom, 8)
-                
+
                 // Title
                 Text("Today's Hadith")
                     .font(.custom("HelveticaNeue-Medium", size: 32))
                     .foregroundColor(Color("PrimaryGreen"))
-                    .padding(.bottom, 6)
+                    .padding(.bottom, 12)
                     .accessibilityAddTraits(.isHeader)
                 
                 // Tagline
@@ -34,27 +35,29 @@ struct HeaderView: View {
                     .font(.custom("HelveticaNeue", size: 16))
                     .foregroundColor(Color("DarkText"))
                     .lineLimit(2)
+                    .lineSpacing(3)
                     .minimumScaleFactor(0.8)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            
             
             Spacer()
             
             // Right column - settings button (aligned to top)
             Button(action: onSettingsTapped) {
-                Image(systemName: "gear")
-                    .font(.system(size: 20))
-                    .foregroundColor(Color("UBtnContent"))
+                Image("SettingsIcon")
+                    .resizable()
+                      .frame(width: 18, height: 18)
+                    .foregroundColor(Color("DarkText"))
                     .frame(width: 40, height: 40)
-                    .background(Color(UIColor.systemGray6))
-                    .clipShape(Circle())
+                    .background(Color("UBtn"))
+                    .cornerRadius(10)
             }
             .accessibilityLabel("Settings")
         }
         .padding(.horizontal)
         .padding(.vertical, 16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(UIColor.systemBackground))
     }
 }
 

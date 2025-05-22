@@ -27,6 +27,7 @@ struct HomeView: View {
             
             Spacer()
         }
+        .background(Color(Color("MainBg"))) // Set the background color here
         .sheet(isPresented: $showSettings) {
             // Settings view will go here
             Text("Settings")
