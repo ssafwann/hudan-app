@@ -37,13 +37,6 @@ import SwiftUI
         return randomHadith
     }
     
-    // Utility: Format the current date for display
-    func formattedCurrentDate() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEE, dd MMM yyyy"
-        return formatter.string(from: Date())
-    }
-    
     // Utility: Get hadith by ID
     func getHadith(by id: Int) -> Hadith? {
         return allHadiths.first(where: { $0.id == id })

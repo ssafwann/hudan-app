@@ -9,15 +9,31 @@ import SwiftUI
 // Georgia
 // HelveticaNeue
 
-struct ContentView: View {
+struct HomeView: View {
+    let model: HadithViewModel
+    // tracker whether the settings should be shown
+    @State private var showSettings = false
+    
+    init(model: HadithViewModel = HadithViewModel()) {
+        self.model = model
+    }
+    
     var body: some View {
-        VStack {
-            Text("Hudan App")
-                .font(.custom("EBGaramond-Regular", size: 44))
+        VStack(spacing: 0) {
+            HeaderView(
+                dateString: DateHelpers.formatDateForHeader(),
+                onSettingsTapped: { showSettings = true }
+            )
+            
+            Spacer()
+        }
+        .sheet(isPresented: $showSettings) {
+            // Settings view will go here
+            Text("Settings")
         }
     }
 }
 
 #Preview {
-    ContentView()
+    HomeView()
 }
