@@ -25,11 +25,20 @@ struct HomeView: View {
                 onSettingsTapped: { showSettings = true }
             )
             
-            Spacer()
+            ScrollView {
+                if let currentHadith = model.currentHadith {
+                    HadithCard(
+                        hadith: currentHadith,
+                        onCopyTapped: {
+                            model.copyToClipboard(text: currentHadith.english)
+                        }
+                    )
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .background(Color(Color("MainBg"))) // Set the background color here
         .sheet(isPresented: $showSettings) {
-            // Settings view will go here
             Text("Settings")
         }
     }
