@@ -33,11 +33,13 @@ struct HomeView: View {
                             model.copyToClipboard(text: currentHadith.english)
                         }
                     )
+                    .padding(.horizontal)
+                    .padding(.vertical)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .background(Color(Color("MainBg"))) // Set the background color here
+        .background(Color("MainBg"))
         .sheet(isPresented: $showSettings) {
             Text("Settings")
         }

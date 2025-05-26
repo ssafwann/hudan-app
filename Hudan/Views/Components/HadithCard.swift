@@ -10,21 +10,31 @@ struct HadithCard: View {
         VStack(alignment: .leading, spacing: 24) {
             // Narrator
             Text("Narrated by \(hadith.narrator):")
-                .font(.custom("HelveticaNeue", size: 16))
-                .foregroundStyle(.secondary)
-            
+                .font(.custom("HelveticaNeue-BoldItalic", size: 14))
+                .foregroundStyle(Color("NText"))
+                .frame(maxWidth: .infinity, alignment: .center)
+
             // Arabic Text
             Text(hadith.arabic)
-                .font(.custom("KFGQPCHAFSUthmanicScript-Regula", size: 24))
+                .font(.custom("KFGQPCHAFSUthmanicScript-Regula", size: 26))
                 .foregroundColor(Color("HadithText"))
                 .multilineTextAlignment(.trailing)
+                .lineSpacing(-1)
                 .frame(maxWidth: .infinity, alignment: .trailing)
             
             // English Translation
-            Text(hadith.english)
+            Text("“\(hadith.english)”")
                 .font(.custom("EBGaramond-Regular", size: 18))
                 .foregroundColor(Color("HadithText"))
                 .fixedSize(horizontal: false, vertical: true)
+                .lineSpacing(4)
+                .kerning(-0.1)
+
+            
+            Divider()
+                  .background(Color("DivClr"))
+                  .padding(.top, -4)
+
             
             // Source and Reference
             VStack(alignment: .leading, spacing: 4) {
@@ -32,23 +42,28 @@ struct HadithCard: View {
                 Text("In-book Reference: \(hadith.inbook_ref)")
                 Text("Grade: \(hadith.grade)")
             }
-            .font(.custom("HelveticaNeue", size: 14))
-            .foregroundStyle(.secondary)
+            .font(.custom("HelveticaNeue", size: 11))
+            .foregroundStyle(Color("LightText"))
+            .padding(.top, -8)
+
             
             // Copy Button
             Button(action: onCopyTapped) {
                 Text("Copy")
-                    .font(.custom("HelveticaNeue", size: 16))
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 8)
-                    .background(Color(.systemGray6))
+                    .font(.custom("HelveticaNeue", size: 12))
+                    .foregroundColor(Color("UBtnContent"))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(Color("UBtn"))
                     .clipShape(Capsule())
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
+            
+            
         }
         .padding(24)
-        .background(Color(.systemBackground))
+        .background(Color("CardBg"))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 
@@ -66,4 +81,5 @@ struct HadithCard: View {
         ),
         onCopyTapped: {}
     )
+    .padding(.horizontal)
 }
