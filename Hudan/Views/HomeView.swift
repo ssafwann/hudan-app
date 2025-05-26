@@ -19,35 +19,30 @@ struct HomeView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                HeaderView(
-                    dateString: DateHelpers.formatDateForHeader(),
-                    onSettingsTapped: { showSettings = true }
+        VStack(spacing: 0) {
+            HeaderView(
+                dateString: DateHelpers.formatDateForHeader(),
+                onSettingsTapped: { showSettings = true }
+            )
+            
+            if let currentHadith = model.currentHadith {
+                HadithCard(
+                    hadith: currentHadith,
+                    onCopyTapped: {
+                        model.copyToClipboard(text: currentHadith.english)
+                    }
                 )
-                
-                if let currentHadith = model.currentHadith {
-                    HadithCard(
-                        hadith: currentHadith,
-                        onCopyTapped: {
-                            model.copyToClipboard(text: currentHadith.english)
-                        }
-                    )
-                    .padding(.horizontal)
-                    .padding(.vertical)
-                }
-                
-                Spacer(minLength: 0)
+                .padding(.vertical)
             }
-            .background(Color("MainBg"))
-
+            
+            Spacer(minLength: 0)
         }
-        .scrollIndicators(.hidden)
+        .padding(.top, 24)
+        .padding(.horizontal, 20)
+        .background(Color("MainBg"))
         .sheet(isPresented: $showSettings) {
             Text("Settings")
         }
-        .padding(.top, 24) // adjust as needed (44–60 works well for most devices)
-        .background(Color("MainBg"))
     }
 }
 

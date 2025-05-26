@@ -55,7 +55,6 @@ struct HeaderView: View {
             }
             .accessibilityLabel("Settings")
         }
-        .padding(.horizontal)
         .padding(.vertical, 16)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
