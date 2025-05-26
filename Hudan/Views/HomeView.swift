@@ -19,13 +19,13 @@ struct HomeView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            HeaderView(
-                dateString: DateHelpers.formatDateForHeader(),
-                onSettingsTapped: { showSettings = true }
-            )
-            
-            ScrollView {
+        ScrollView {
+            VStack(spacing: 0) {
+                HeaderView(
+                    dateString: DateHelpers.formatDateForHeader(),
+                    onSettingsTapped: { showSettings = true }
+                )
+                
                 if let currentHadith = model.currentHadith {
                     HadithCard(
                         hadith: currentHadith,
@@ -36,13 +36,18 @@ struct HomeView: View {
                     .padding(.horizontal)
                     .padding(.vertical)
                 }
+                
+                Spacer(minLength: 0)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color("MainBg"))
+
         }
-        .background(Color("MainBg"))
+        .scrollIndicators(.hidden)
         .sheet(isPresented: $showSettings) {
             Text("Settings")
         }
+        .padding(.top, 24) // adjust as needed (44–60 works well for most devices)
+        .background(Color("MainBg"))
     }
 }
 
