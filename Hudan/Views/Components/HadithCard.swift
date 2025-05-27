@@ -4,7 +4,6 @@ import SwiftUI
 
 struct HadithCard: View {
     let hadith: Hadith
-    var onCopyTapped: () -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -15,9 +14,9 @@ struct HadithCard: View {
                 .foregroundStyle(Color("NText"))
                 .frame(maxWidth: .infinity, alignment: .center)
 
+            // Arabic + English text
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {
-                    // Arabic Text
                     Text(hadith.arabic)
                         .font(.custom("KFGQPCHAFSUthmanicScript-Regula", size: 26))
                         .foregroundColor(Color("HadithText"))
@@ -25,7 +24,6 @@ struct HadithCard: View {
                         .lineSpacing(-1)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     
-                    // English Translation
                     Text("“\(hadith.english)”")
                         .font(.custom("EBGaramond-Regular", size: 18))
                         .foregroundColor(Color("HadithText"))
@@ -55,7 +53,7 @@ struct HadithCard: View {
                 Spacer()
 
                 // Copy Button
-                Button(action: onCopyTapped) {
+                Button(action: { HadithCopyFormatter.copyToClipboard(hadith) }) {
                     Text("Copy")
                         .font(.custom("HelveticaNeue", size: 12))
                         .foregroundColor(Color("UBtnContent"))
@@ -86,8 +84,7 @@ struct HadithCard: View {
             ref: "Sahih al-Bukhari 5971",
             inbook_ref: "Book 78, Hadith 1",
             grade: "Sahih (authentic)"
-        ),
-        onCopyTapped: {}
+        )
     )
     .padding(.horizontal)
 }

@@ -26,13 +26,8 @@ struct HomeView: View {
             )
             
             if let currentHadith = model.currentHadith {
-                HadithCard(
-                    hadith: currentHadith,
-                    onCopyTapped: {
-                        model.copyToClipboard(text: currentHadith.english)
-                    }
-                )
-                .padding(.vertical)
+                HadithCard(hadith: currentHadith)
+                    .padding(.vertical)
             }
             
             Spacer(minLength: 0)
