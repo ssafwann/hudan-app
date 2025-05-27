@@ -34,6 +34,8 @@ struct HadithCard: View {
                         .kerning(-0.1)
                 }
             }
+            .frame(idealHeight: 0, maxHeight: 350)
+            .scrollBounceBehavior(.basedOnSize)
             
             Divider()
                 .background(Color("DivClr"))
