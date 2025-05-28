@@ -36,7 +36,7 @@ struct HomeView: View {
         .padding(.horizontal, 20)
         .background(Color("MainBg"))
         .sheet(isPresented: $showSettings) {
-            Text("Settings")
+            SettingsView()
         }
     }
 }
