@@ -34,21 +34,34 @@ final class WidgetSettingsManager {
     // curent text display settings
     var textDisplay: WidgetTextDisplay {
         get {
-            guard let rawValue = defaults.string(forKey: WidgetSettingsKey.textDisplay),
-                  let value = WidgetTextDisplay(rawValue: rawValue) else {
+            print("[WMS get textDisplay] Attempting to read from UserDefaults...")
+            let rawValueFromDefaults = defaults.string(forKey: WidgetSettingsKey.textDisplay)
+            print("[WMS get textDisplay] Raw value from UserDefaults for key '\(WidgetSettingsKey.textDisplay)': \(rawValueFromDefaults ?? "nil")")
+            
+            guard let rawValue = rawValueFromDefaults else {
+                print("[WMS get textDisplay] Raw value is nil. Returning default: .english")
                 return .english // Default value
             }
+            
+            guard let value = WidgetTextDisplay(rawValue: rawValue) else {
+                print("[WMS get textDisplay] Failed to initialize WidgetTextDisplay from rawValue '\(rawValue)'. Returning default: .english")
+                return .english // Default value if rawValue is invalid
+            }
+            
+            print("[WMS get textDisplay] Successfully retrieved and returning: \(value.rawValue)")
             return value
         }
         set {
             defaults.setValue(newValue.rawValue, forKey: WidgetSettingsKey.textDisplay)
-            updateWidget()
+            updateWidget() // Re-enable widget updates
+            print("[WMS set textDisplay] Set to \(newValue.rawValue). updateWidget() is now ENABLED.")
         }
     }
     
     // current bg settings
     var backgroundType: WidgetBackgroundType {
         get {
+            // ... (similar logging can be added here if needed for backgroundType debugging)
             guard let rawValue = defaults.string(forKey: WidgetSettingsKey.backgroundType),
                   let value = WidgetBackgroundType(rawValue: rawValue) else {
                 return .default // Default value
@@ -57,18 +70,21 @@ final class WidgetSettingsManager {
         }
         set {
             defaults.setValue(newValue.rawValue, forKey: WidgetSettingsKey.backgroundType)
-            updateWidget()
+            updateWidget() // Re-enable widget updates for backgroundType as well
+            print("[WMS set backgroundType] Set to \(newValue.rawValue). updateWidget() is now ENABLED.")
         }
     }
     
     // current select bg index
     var selectedBackgroundIndex: Int {
         get {
+            // ... (similar logging can be added here if needed)
             defaults.integer(forKey: WidgetSettingsKey.selectedBackgroundIndex)
         }
         set {
             defaults.setValue(newValue, forKey: WidgetSettingsKey.selectedBackgroundIndex)
-            updateWidget()
+            updateWidget() // Re-enable widget updates for selectedBackgroundIndex as well
+            print("[WMS set selectedBackgroundIndex] Set to \(newValue). updateWidget() is now ENABLED.")
         }
     }
     

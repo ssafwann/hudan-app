@@ -35,7 +35,9 @@ struct SettingsView: View {
                         HStack(spacing: 8) {
                             ForEach(WidgetTextDisplay.allCases, id: \.self) { option in
                                 Button(action: {
+                                    print("[SettingsView Button Action] Tapped. Current 'option' in this button's scope is: \(option.rawValue)")
                                     settings.textDisplay = option
+                                    print("[SettingsView Button Action] settings.textDisplay was set to \(option.rawValue). Getter now returns: \(settings.textDisplay.rawValue)")
                                 }) {
                                     Text(option.rawValue.capitalized)
                                         .font(.system(size: 17))
@@ -47,6 +49,7 @@ struct SettingsView: View {
                                         )
                                         .foregroundColor(settings.textDisplay == option ? .white : .primary)
                                 }
+                                .buttonStyle(.borderless)
                             }
                         }
                     }
@@ -72,6 +75,7 @@ struct SettingsView: View {
                                         )
                                         .foregroundColor(settings.backgroundType == option ? .white : .primary)
                                 }
+                                .buttonStyle(.borderless)
                             }
                         }
                         
