@@ -15,8 +15,28 @@
         "arabic": "أَنَّ رَجُلاً سَأَلَ النَّبِيَّ صلى الله عليه وسلم أَىُّ الإِسْلاَمِ خَيْرٌ قَالَ \"تُطْعِمُ الطَّعَامَ, وَتَقْرَأُ السَّلاَمَ عَلَى مَنْ عَرَفْتَ وَمَنْ لَمْ تَعْرِفْ\"",
         "english": "A man asked the Prophet (ﷺ) , \"What sort of deeds or (what qualities of) Islam are good?\" The Prophet (ﷺ) replied, 'To feed (the poor) and greet those whom you know and those whom you do not know\"",
         "summary": "A man asked the Prophet (ﷺ) what deeds of Islam are good. He replied: \"to feed the poor and great those you know and don't know\"",
+        "ref": "Sahih al-Bukhari 12",
+        "inbook_ref": "Book 2, Hadith 5",
+        "grade": "Sahih"
+    },
+    {
+        "id": 3,
+        "narrator": "Anas",
+        "arabic": "عَنِ النَّبِيِّ صلى الله عليه وسلم قَالَ \"لا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ\"",
+        "english": "The Prophet (ﷺ) said, \"None of you will have faith till he wishes for his (Muslim) brother what he likes for himself.\"",
+        "summary": "The Prophet (ﷺ) said, \"None of you will have faith till he wishes for his (Muslim) brother what he likes for himself.\"",
         "ref": "Sahih al-Bukhari 13",
         "inbook_ref": "Book 2, Hadith 6",
+        "grade": "Sahih"
+    },
+    {
+        "id": 4,
+        "narrator": "Abu Huraira",
+        "arabic": "أَنَّ رَسُولَ اللَّهِ صلى الله عليه وسلم قَالَ \"فَوَالَّذِي نَفْسِي بِيَدِهِ, لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى أَكُونَ أَحَبَّ إِلَيْهِ مِنْ وَالِدِهِ وَوَلَدِهِ\"",
+        "english": "\"Allah's Messenger (ﷺ) said, \"By Him in Whose Hands my life is, none of you will have faith till he loves me more than his father and his children.\"",
+        "summary": "\"Allah's Messenger (ﷺ) said, \"By Him in Whose Hands my life is, none of you will have faith till he loves me more than his father and his children.\"",
+        "ref": "Sahih al-Bukhari 14",
+        "inbook_ref": "Book 2, Hadith 7",
         "grade": "Sahih"
     }
 ]
