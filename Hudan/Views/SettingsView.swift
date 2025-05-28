@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @State private var settings = WidgetSettingsManager.shared
+    // Use @StateObject for ObservableObject singletons to ensure the view subscribes
+    // to its changes and manages its lifecycle appropriately within the view.
+    @StateObject private var settings = WidgetSettingsManager.shared
     
     var body: some View {
         VStack(spacing: 0) {

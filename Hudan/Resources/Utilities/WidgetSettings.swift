@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import Combine // Needed for ObservableObject and @Published
 import WidgetKit
 
 
@@ -24,44 +25,36 @@ private enum WidgetSettingsKey {
 }
 
 // MARK: - Widget Settings Manager
-@Observable
-final class WidgetSettingsManager {
+// N.B. Changed from @Observable to ObservableObject for broader iOS compatibility
+// and to work with @StateObject / @ObservedObject.
+final class WidgetSettingsManager: ObservableObject {
     static let shared = WidgetSettingsManager()
     
     private let defaults: UserDefaults
     
+    // N.B. objectWillChange.send() is called manually in setters because computed properties
+    // cannot directly use @Published in the same way stored properties do.
+    // Alternatively, make these stored properties and update them from UserDefaults if that fits better.
     
     // curent text display settings
     var textDisplay: WidgetTextDisplay {
         get {
-            print("[WMS get textDisplay] Attempting to read from UserDefaults...")
-            let rawValueFromDefaults = defaults.string(forKey: WidgetSettingsKey.textDisplay)
-            print("[WMS get textDisplay] Raw value from UserDefaults for key '\(WidgetSettingsKey.textDisplay)': \(rawValueFromDefaults ?? "nil")")
-            
-            guard let rawValue = rawValueFromDefaults else {
-                print("[WMS get textDisplay] Raw value is nil. Returning default: .english")
+            guard let rawValue = defaults.string(forKey: WidgetSettingsKey.textDisplay),
+                  let value = WidgetTextDisplay(rawValue: rawValue) else {
                 return .english // Default value
             }
-            
-            guard let value = WidgetTextDisplay(rawValue: rawValue) else {
-                print("[WMS get textDisplay] Failed to initialize WidgetTextDisplay from rawValue '\(rawValue)'. Returning default: .english")
-                return .english // Default value if rawValue is invalid
-            }
-            
-            print("[WMS get textDisplay] Successfully retrieved and returning: \(value.rawValue)")
             return value
         }
         set {
+            objectWillChange.send() // Manually notify subscribers before the change
             defaults.setValue(newValue.rawValue, forKey: WidgetSettingsKey.textDisplay)
-            updateWidget() // Re-enable widget updates
-            print("[WMS set textDisplay] Set to \(newValue.rawValue). updateWidget() is now ENABLED.")
+            updateWidget()
         }
     }
     
     // current bg settings
     var backgroundType: WidgetBackgroundType {
         get {
-            // ... (similar logging can be added here if needed for backgroundType debugging)
             guard let rawValue = defaults.string(forKey: WidgetSettingsKey.backgroundType),
                   let value = WidgetBackgroundType(rawValue: rawValue) else {
                 return .default // Default value
@@ -69,22 +62,21 @@ final class WidgetSettingsManager {
             return value
         }
         set {
+            objectWillChange.send()
             defaults.setValue(newValue.rawValue, forKey: WidgetSettingsKey.backgroundType)
-            updateWidget() // Re-enable widget updates for backgroundType as well
-            print("[WMS set backgroundType] Set to \(newValue.rawValue). updateWidget() is now ENABLED.")
+            updateWidget()
         }
     }
     
     // current select bg index
     var selectedBackgroundIndex: Int {
         get {
-            // ... (similar logging can be added here if needed)
             defaults.integer(forKey: WidgetSettingsKey.selectedBackgroundIndex)
         }
         set {
+            objectWillChange.send()
             defaults.setValue(newValue, forKey: WidgetSettingsKey.selectedBackgroundIndex)
-            updateWidget() // Re-enable widget updates for selectedBackgroundIndex as well
-            print("[WMS set selectedBackgroundIndex] Set to \(newValue). updateWidget() is now ENABLED.")
+            updateWidget()
         }
     }
     
@@ -104,13 +96,13 @@ final class WidgetSettingsManager {
     // MARK: - Private Methods
     
     private func registerDefaults() {
-        let defaults: [String: Any] = [
+        let defaultsToRegister: [String: Any] = [
             WidgetSettingsKey.textDisplay: WidgetTextDisplay.english.rawValue,
             WidgetSettingsKey.backgroundType: WidgetBackgroundType.default.rawValue,
             WidgetSettingsKey.selectedBackgroundIndex: 0
         ]
         
-        self.defaults.register(defaults: defaults)
+        self.defaults.register(defaults: defaultsToRegister)
     }
     
     private func updateWidget() {
@@ -122,8 +114,12 @@ final class WidgetSettingsManager {
     // MARK: - Public Methods
     
     func resetToDefaults() {
-        textDisplay = .english
-        backgroundType = .default
-        selectedBackgroundIndex = 0
+        // Manually call objectWillChange.send() for each property being reset
+        objectWillChange.send()
+        textDisplay = .english       // This will call its own objectWillChange.send()
+        objectWillChange.send()
+        backgroundType = .default    // This will call its own objectWillChange.send()
+        objectWillChange.send()
+        selectedBackgroundIndex = 0  // This will call its own objectWillChange.send()
     }
 }
