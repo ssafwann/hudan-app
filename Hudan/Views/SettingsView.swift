@@ -51,6 +51,7 @@ struct SettingsView: View {
                         Text("Background")
                             .font(.system(size: 17))
                         
+                        /* // Temporarily commented out the background type selection buttons
                         HStack(spacing: 8) {
                             ForEach(WidgetBackgroundType.allCases, id: \.self) { option in
                                 Button(action: {
@@ -69,36 +70,37 @@ struct SettingsView: View {
                                 .buttonStyle(.borderless)
                             }
                         }
+                        */
                         
-                        if settings.backgroundType == .custom {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
-                                    ForEach(0..<WidgetBackgroundManager.backgroundImages.count, id: \.self) { index in
-                                        Button(action: {
-                                            settings.selectedBackgroundIndex = index
-                                        }) {
-                                            Image("bg\(index + 1)")
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fill)
-                                                .frame(width: 64, height: 64)
-                                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                                .overlay(
-                                                    ZStack {
-                                                        if settings.selectedBackgroundIndex == index {
-                                                            RoundedRectangle(cornerRadius: 8)
-                                                                .fill(Color.black.opacity(0.3)) // Slight dim for better checkmark visibility
-                                                            Image(systemName: "checkmark")
-                                                                .font(.system(size: 24, weight: .bold))
-                                                                .foregroundColor(.white)
-                                                        }
+                        // if settings.backgroundType == .default { // Show image selection when .default is selected
+                        // Since .default is now the only background mode, always show the image selection.
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(0..<WidgetBackgroundManager.backgroundImages.count, id: \.self) { index in
+                                    Button(action: {
+                                        settings.selectedBackgroundIndex = index
+                                    }) {
+                                        Image("bg\(index + 1)")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: 64, height: 64)
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                                            .overlay(
+                                                ZStack {
+                                                    if settings.selectedBackgroundIndex == index {
+                                                        RoundedRectangle(cornerRadius: 8)
+                                                            .fill(Color.black.opacity(0.3)) // Slight dim for better checkmark visibility
+                                                        Image(systemName: "checkmark")
+                                                            .font(.system(size: 24, weight: .bold))
+                                                            .foregroundColor(.white)
                                                     }
-                                                )
-                                        }
+                                                }
+                                            )
                                     }
                                 }
                             }
-                            .padding(.top, 4)
                         }
+                        .padding(.top, 4)
                     }
                     .padding(.vertical, 8)
                     

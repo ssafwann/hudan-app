@@ -11,7 +11,7 @@ enum WidgetTextDisplay: String, CaseIterable {
 
 enum WidgetBackgroundType: String, CaseIterable {
     case `default`
-    case custom
+    // case custom // Temporarily commented out to only allow default background type
 }
 
 private enum WidgetSettingsKey {
@@ -51,6 +51,10 @@ final class WidgetSettingsManager: ObservableObject {
                   let value = WidgetBackgroundType(rawValue: rawValue) else {
                 return .default
             }
+            // If 'custom' was previously saved, treat it as 'default' for now
+            if rawValue == "custom" {
+                return .default
+            }
             return value
         }
         set {
@@ -85,7 +89,7 @@ final class WidgetSettingsManager: ObservableObject {
     private func registerDefaults() {
         let defaultsToRegister: [String: Any] = [
             WidgetSettingsKey.textDisplay: WidgetTextDisplay.english.rawValue,
-            WidgetSettingsKey.backgroundType: WidgetBackgroundType.default.rawValue,
+            WidgetSettingsKey.backgroundType: WidgetBackgroundType.default.rawValue, // Ensure default is .default
             WidgetSettingsKey.selectedBackgroundIndex: 0
         ]
         
@@ -101,9 +105,7 @@ final class WidgetSettingsManager: ObservableObject {
     func resetToDefaults() {
         objectWillChange.send()
         textDisplay = .english
-        objectWillChange.send()
         backgroundType = .default
-        objectWillChange.send()
         selectedBackgroundIndex = 0
     }
 }
