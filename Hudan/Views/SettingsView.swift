@@ -1,20 +1,11 @@
-//
-//  SettingsView.swift
-//  Hudan
-//
-//  Created by Malik Safwan on 21/5/2025.
-//
-
 import SwiftUI
 
 struct SettingsView: View {
-    // Use @StateObject for ObservableObject singletons to ensure the view subscribes
-    // to its changes and manages its lifecycle appropriately within the view.
     @StateObject private var settings = WidgetSettingsManager.shared
     
     var body: some View {
         VStack(spacing: 0) {
-            // Custom Header for the Sheet
+            // header
             HStack {
                 Image(systemName: "gearshape.fill")
                     .font(.system(size: 20))
@@ -29,7 +20,7 @@ struct SettingsView: View {
             
             List {
                 Section {
-                    // Verse Text Options
+                    // verse text option
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Verse Text")
                             .font(.system(size: 17))
@@ -37,9 +28,7 @@ struct SettingsView: View {
                         HStack(spacing: 8) {
                             ForEach(WidgetTextDisplay.allCases, id: \.self) { option in
                                 Button(action: {
-                                    print("[SettingsView Button Action] Tapped. Current 'option' in this button's scope is: \(option.rawValue)")
                                     settings.textDisplay = option
-                                    print("[SettingsView Button Action] settings.textDisplay was set to \(option.rawValue). Getter now returns: \(settings.textDisplay.rawValue)")
                                 }) {
                                     Text(option.rawValue.capitalized)
                                         .font(.system(size: 17))
@@ -55,9 +44,9 @@ struct SettingsView: View {
                             }
                         }
                     }
-                    .padding(.vertical, 8) // Padding for content within the list row
+                    .padding(.vertical, 8)
                     
-                    // Background Options
+                    // background options
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Background")
                             .font(.system(size: 17))
@@ -88,7 +77,7 @@ struct SettingsView: View {
                                         Button(action: {
                                             settings.selectedBackgroundIndex = index
                                         }) {
-                                            Image("bg\(index + 1)") // Assuming these images are in your asset catalog
+                                            Image("bg\(index + 1)")
                                                 .resizable()
                                                 .aspectRatio(contentMode: .fill)
                                                 .frame(width: 64, height: 64)
@@ -111,7 +100,7 @@ struct SettingsView: View {
                             .padding(.top, 4)
                         }
                     }
-                    .padding(.vertical, 8) // Padding for content within the list row
+                    .padding(.vertical, 8)
                     
                 } header: {
                     Text("WIDGET")
@@ -119,17 +108,13 @@ struct SettingsView: View {
                         .foregroundColor(Color(.darkGray))
                         .fontWeight(.medium)
                 }
-                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)) // Adjust row insets
-                .listRowBackground(Color.clear) // Ensure section background is transparent
+                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                .listRowBackground(Color.clear)
             }
             .listStyle(.insetGrouped)
-            .environment(\.defaultMinListHeaderHeight, 30) // Adjust header height
+            .environment(\.defaultMinListHeaderHeight, 30)
         }
-        .onAppear {
-            print("SettingsView appeared. Initial settings:")
-            print("Text Display: \(settings.textDisplay.rawValue)")
-            print("Background Type: \(settings.backgroundType.rawValue)")
-        }
+        // sheet height
         .presentationDetents([.fraction(0.4)])
     }
 }
