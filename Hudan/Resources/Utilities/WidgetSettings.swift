@@ -1,63 +1,55 @@
 import Foundation
 import SwiftUI
-import Combine // Needed for ObservableObject and @Published
+import Combine
 import WidgetKit
 
-
-// text options
 enum WidgetTextDisplay: String, CaseIterable {
     case english
     case arabic
     case both
 }
 
-// background options
 enum WidgetBackgroundType: String, CaseIterable {
     case `default`
     case custom
 }
 
-// MARK: - Widget Settings Keys
 private enum WidgetSettingsKey {
     static let textDisplay = "widget.textDisplay"
     static let backgroundType = "widget.backgroundType"
     static let selectedBackgroundIndex = "widget.selectedBackgroundIndex"
 }
 
-// MARK: - Widget Settings Manager
-// N.B. Changed from @Observable to ObservableObject for broader iOS compatibility
-// and to work with @StateObject / @ObservedObject.
 final class WidgetSettingsManager: ObservableObject {
+    // singleton: allows all parts of app to work with the same settings data.
     static let shared = WidgetSettingsManager()
-    
+
+    // used for persistance storage
     private let defaults: UserDefaults
     
-    // N.B. objectWillChange.send() is called manually in setters because computed properties
-    // cannot directly use @Published in the same way stored properties do.
-    // Alternatively, make these stored properties and update them from UserDefaults if that fits better.
-    
-    // curent text display settings
     var textDisplay: WidgetTextDisplay {
+        // reads the settings from userDefaults
         get {
             guard let rawValue = defaults.string(forKey: WidgetSettingsKey.textDisplay),
                   let value = WidgetTextDisplay(rawValue: rawValue) else {
-                return .english // Default value
+                return .english // default value
             }
             return value
         }
+        // called when a new value is assigned (e.g.g settings.textDisplay = ..)
         set {
-            objectWillChange.send() // Manually notify subscribers before the change
+            // this manually notifies that a prop of this obj is about to change. (doens't actually change it)
+            objectWillChange.send()
             defaults.setValue(newValue.rawValue, forKey: WidgetSettingsKey.textDisplay)
             updateWidget()
         }
     }
     
-    // current bg settings
     var backgroundType: WidgetBackgroundType {
         get {
             guard let rawValue = defaults.string(forKey: WidgetSettingsKey.backgroundType),
                   let value = WidgetBackgroundType(rawValue: rawValue) else {
-                return .default // Default value
+                return .default
             }
             return value
         }
@@ -68,7 +60,7 @@ final class WidgetSettingsManager: ObservableObject {
         }
     }
     
-    // current select bg index
+    // current selected bg index
     var selectedBackgroundIndex: Int {
         get {
             defaults.integer(forKey: WidgetSettingsKey.selectedBackgroundIndex)
@@ -79,22 +71,17 @@ final class WidgetSettingsManager: ObservableObject {
             updateWidget()
         }
     }
-    
-    // MARK: - Initialization
-    
+        
     private init() {
         // Get shared UserDefaults for the app group
         guard let defaults = UserDefaults(suiteName: Constants.widgetSettingsSuiteName) else {
             fatalError("Failed to initialize UserDefaults with suite name: \(Constants.widgetSettingsSuiteName)")
         }
         self.defaults = defaults
-        
         // Register default values if not already set
         registerDefaults()
     }
-    
-    // MARK: - Private Methods
-    
+        
     private func registerDefaults() {
         let defaultsToRegister: [String: Any] = [
             WidgetSettingsKey.textDisplay: WidgetTextDisplay.english.rawValue,
@@ -110,16 +97,13 @@ final class WidgetSettingsManager: ObservableObject {
         WidgetCenter.shared.reloadAllTimelines()
         #endif
     }
-    
-    // MARK: - Public Methods
-    
+        
     func resetToDefaults() {
-        // Manually call objectWillChange.send() for each property being reset
         objectWillChange.send()
-        textDisplay = .english       // This will call its own objectWillChange.send()
+        textDisplay = .english
         objectWillChange.send()
-        backgroundType = .default    // This will call its own objectWillChange.send()
+        backgroundType = .default
         objectWillChange.send()
-        selectedBackgroundIndex = 0  // This will call its own objectWillChange.send()
+        selectedBackgroundIndex = 0
     }
 }
