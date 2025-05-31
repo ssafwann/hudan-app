@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @StateObject private var settings = WidgetSettingsManager.shared
+    @State private var showInfoView = false
     
     var body: some View {
         VStack(spacing: 0,) {
@@ -14,9 +15,17 @@ struct SettingsView: View {
                     .font(.custom("HelveticaNeue-Medium", size: 18))
                     .foregroundColor(Color("HadithText"))
                 Spacer()
-                Image("InfoIcon")
-                    .resizable()
-                    .frame(width: 18, height: 18)
+                Button(action: {
+                    var transaction = Transaction()
+                    transaction.disablesAnimations = true
+                    withTransaction(transaction) {
+                        showInfoView = true
+                    }
+                }) {
+                    Image("InfoIcon")
+                        .resizable()
+                        .frame(width: 18, height: 18)
+                }
             }
             .padding(.horizontal)
             .padding(.top, 35)
@@ -147,6 +156,9 @@ struct SettingsView: View {
         .presentationDetents([.fraction(0.45)])
         .presentationCornerRadius(24)
         .presentationDragIndicator(.visible)
+        .fullScreenCover(isPresented: $showInfoView) {
+            InfoView()
+        }
     }
 }
 
