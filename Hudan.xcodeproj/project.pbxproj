@@ -72,6 +72,17 @@
 			);
 			target = 1753B1272DDC6BC80081A326 /* Hudan */;
 		};
+		178539FB2DEABF8100C15F24 /* Exceptions for "Hudan" folder in "HudanWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/Hadith.swift,
+				Resources/hadiths.json,
+				Resources/Utilities/Constants.swift,
+				Resources/Utilities/WidgetBackgroundManager.swift,
+				Resources/Utilities/WidgetSettings.swift,
+			);
+			target = 178539462DDC6EDD00C15F24 /* HudanWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -79,6 +90,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				178539712DDC773300C15F24 /* Exceptions for "Hudan" folder in "Hudan" target */,
+				178539FB2DEABF8100C15F24 /* Exceptions for "Hudan" folder in "HudanWidgetExtension" target */,
 			);
 			path = Hudan;
 			sourceTree = "<group>";
