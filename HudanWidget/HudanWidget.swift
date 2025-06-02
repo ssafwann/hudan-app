@@ -1,10 +1,3 @@
-//
-//  HudanWidget.swift
-//  HudanWidget
-//
-//  Created by Malik Safwan on 20/5/2025.
-//
-
 import WidgetKit
 import SwiftUI
 
@@ -148,16 +141,16 @@ struct HudanWidget: Widget {
                     .background()
             }
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .configurationDisplayName("Daily Verse")
+        .description("Displays a daily verse from Hudan.")
+        .supportedFamilies([.systemMedium, .systemLarge])
     }
 }
 
 
-#Preview(as: .systemSmall) {
+#Preview(as: .systemMedium) {
     HudanWidget()
 } timeline: {
-    // Update preview timeline to use HadithTimelineEntry
     HadithTimelineEntry.placeholder()
     HadithTimelineEntry(date: .now, hadithID: 2, arabicText: "Sample Arabic 2", summaryText: "Sample Summary 2", referenceText: "Reference 2", textDisplayMode: .both, backgroundType: .default, selectedBackgroundIndex: 1)
 }

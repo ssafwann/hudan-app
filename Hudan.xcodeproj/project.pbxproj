@@ -76,6 +76,10 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Models/Hadith.swift,
+				Resources/Assets.xcassets,
+				Resources/Fonts/EBGaramond.ttf,
+				"Resources/Fonts/Indopak Nastaleeq.ttf",
+				"Resources/Fonts/KFGQPC HAFS Uthmanic Script.ttf",
 				Resources/hadiths.json,
 				Resources/Utilities/Constants.swift,
 				Resources/Utilities/WidgetBackgroundManager.swift,
