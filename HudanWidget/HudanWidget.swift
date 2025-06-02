@@ -118,11 +118,24 @@ struct HudanWidgetEntryView : View {
     var entry: HadithTimelineEntry // Update to use HadithTimelineEntry
 
     var body: some View {
-        // We will replace this VStack with the actual widget UI later
-        VStack {
-            Text("Hadith Reference:")
-            Text(entry.summaryText ?? "N/A")
-            Text("Display Mode: \(entry.textDisplayMode.rawValue)")
+        ZStack {
+            // Background
+            if entry.backgroundType == .default {
+                Image("bg\(entry.selectedBackgroundIndex + 1)") // Reverted to direct Image loading
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                Color(UIColor.systemBackground)
+            }
+
+            // Placeholder for content - will be updated next
+            VStack {
+                Text("Hadith Reference: Placeholder")
+                Text(entry.summaryText ?? "N/A Placeholder")
+                Text("Display Mode: \(entry.textDisplayMode.rawValue) Placeholder")
+            }
+            .foregroundColor(.white) // Set text to white for visibility against dark backgrounds
         }
     }
 }
