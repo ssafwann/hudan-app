@@ -121,7 +121,7 @@ struct HudanWidgetEntryView : View {
         ZStack {
             // Background
             if entry.backgroundType == .default {
-                Image("bg\(entry.selectedBackgroundIndex + 1)") // Reverted to direct Image loading
+                Image("bg\(entry.selectedBackgroundIndex + 4)") // Reverted to direct Image loading
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -147,16 +147,16 @@ struct HudanWidget: Widget {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             if #available(iOS 17.0, *) {
                 HudanWidgetEntryView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
+                    .containerBackground(Color.clear, for: .widget)
             } else {
                 HudanWidgetEntryView(entry: entry)
-                    .padding()
-                    .background()
+                    .background(Color.clear)
             }
         }
         .configurationDisplayName("Daily Verse")
         .description("Displays a daily verse from Hudan.")
         .supportedFamilies([.systemMedium, .systemLarge])
+        .contentMarginsDisabled()
     }
 }
 
