@@ -99,21 +99,73 @@ struct HudanWidgetEntryView : View {
     var entry: HadithTimelineEntry
     @Environment(\.widgetFamily) var widgetFamily // For dynamic styling
     
-    // Font names (as per your previous spec)
-    private let arabicFontName = "KFGQPCHAFSUthmanicScript-Regula"
-    private let summaryFontName = "Georgia"
-    private let referenceFontName = "HelveticaNeue"
-    
     // Computed styling properties (adjust these as needed after testing)
-    private var summaryFontSize: CGFloat { widgetFamily == .systemLarge ? 19 : 16 }
-    private var referenceFontSize: CGFloat { widgetFamily == .systemLarge ? 13 : 11 }
-    private var arabicFontSize: CGFloat { widgetFamily == .systemLarge ? 21 : 17 }
-    
-    private var summaryLineLimit: Int { widgetFamily == .systemLarge ? 6 : 4 }
-    private var arabicLineLimit: Int { widgetFamily == .systemLarge ? 5 : 3 }
+    private var summaryFontSize: CGFloat { widgetFamily == .systemLarge ? 18 : 14 }
+    // UPDATED COMPUTED PROPERTY for REFERENCE FONT SIZE
+    private var referenceFontSize: CGFloat {
+        let isLarge = widgetFamily == .systemLarge
+        switch entry.textDisplayMode {
+        case .both:
+            return isLarge ? 11 : 9
+        case .arabic, .english:
+            return isLarge ? 13 : 11
+        }
+    }
+    // UPDATED COMPUTED PROPERTY for ARABIC FONT SIZE (with corrected sizes as per user feedback)
+    private var arabicFontSize: CGFloat {
+        let isLarge = widgetFamily == .systemLarge
+        switch entry.textDisplayMode {
+        case .both:
+            return isLarge ? 20 : 16 // Medium is 13, Large is 16
+        case .arabic:
+            return isLarge ? 22 : 18 // Medium is 14, Large is 18
+        case .english: // Arabic text not shown, but specify for completeness
+            return isLarge ? 22 : 18 // Medium is 14, Large is 18
+        }
+    }
+    private var textLineSpacing: CGFloat { widgetFamily == .systemLarge ? 8 : 4 }
+
+    // UPDATED COMPUTED PROPERTY for ARABIC LINE LIMIT
+    private var arabicLineLimit: Int {
+        let isLarge = widgetFamily == .systemLarge
+        switch entry.textDisplayMode {
+        case .arabic: // Arabic only
+            return isLarge ? 6 : 2
+        case .english: // English only
+            return 0 // Arabic text is not shown
+        case .both: // Both
+            return isLarge ? 3 : 1
+        }
+    }
+
+    // UPDATED COMPUTED PROPERTY for SUMMARY (ENGLISH) LINE LIMIT
+    private var summaryLineLimit: Int {
+        let isLarge = widgetFamily == .systemLarge
+        switch entry.textDisplayMode {
+        case .english: // English only
+            return isLarge ? 6 : 3
+        case .arabic: // Arabic only
+            return 0 // English text is not shown
+        case .both: // Both
+            return isLarge ? 3 : 1
+        }
+    }
+
+    // Reference line limit remains 1 as per existing code
     private var referenceLineLimit: Int { 1 }
-    private var VstackSpacing: CGFloat { widgetFamily == .systemLarge ? 10 : 6}
+    // UPDATED COMPUTED PROPERTY for VStackSpacing
+    private var VstackSpacing: CGFloat {
+        if entry.textDisplayMode == .arabic {
+            return 10 // 10 for both medium and large if only Arabic is shown
+        } else {
+            return widgetFamily == .systemLarge ? 10 : 6 // Default logic
+        }
+    }
     
+    // New computed property for Arabic-specific line spacing
+    private var arabicLineSpacing: CGFloat {
+        widgetFamily == .systemLarge ? 14 : 12
+    }
     
     var body: some View {
         GeometryReader { geo in
@@ -125,22 +177,25 @@ struct HudanWidgetEntryView : View {
                         .scaledToFill()
                         .frame(width: geo.size.width, height: geo.size.height)
                         .clipped()
+                        .opacity(0.95)
                 } else {
                     Color(UIColor.systemBackground)
                 }
-                
-                Color.black.opacity(0.4)
+                Color.black.opacity(0.3)
                 
                 VStack(alignment: .leading, spacing: VstackSpacing) {
                     // Arabic
                     if entry.textDisplayMode == .arabic || entry.textDisplayMode == .both {
                         if let arabicText = entry.arabicText, !arabicText.isEmpty {
                             Text(arabicText)
-                                .font(.custom(arabicFontName, size: arabicFontSize))
+                                .font(.custom("KFGQPCHAFSUthmanicScript-Regula", size: arabicFontSize))
+                                .foregroundColor(Color("White"))
+                                .lineSpacing(arabicLineSpacing)
                                 .multilineTextAlignment(.trailing)
                                 .environment(\.layoutDirection, .rightToLeft)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                                 .lineLimit(arabicLineLimit)
+                                .padding(.bottom, entry.textDisplayMode == .both ? 6 : 0)
                         }
                     }
                     
@@ -148,7 +203,9 @@ struct HudanWidgetEntryView : View {
                     if entry.textDisplayMode == .english || entry.textDisplayMode == .both {
                         if let summaryText = entry.summaryText, !summaryText.isEmpty {
                             Text(summaryText)
-                                .font(.custom(summaryFontName, size: summaryFontSize))
+                                .font(.custom("Georgia", size: summaryFontSize))
+                                .foregroundColor(Color("White"))
+                                .lineSpacing(textLineSpacing)
                                 .multilineTextAlignment(.leading)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .lineLimit(summaryLineLimit)
@@ -158,15 +215,14 @@ struct HudanWidgetEntryView : View {
                     // Reference
                     if let referenceText = entry.referenceText, !referenceText.isEmpty {
                         Text(referenceText.uppercased())
-                            .font(.custom(referenceFontName, size: referenceFontSize))
-                            .tracking(0.5)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .font(.custom("HelveticaNeue", size: referenceFontSize))
+                            .foregroundColor(Color("Reference"))
+                            .frame(maxWidth: .infinity, alignment: entry.textDisplayMode == .arabic ? .trailing : .leading)
                             .lineLimit(referenceLineLimit)
-                            .opacity(0.8)
                     }
                 }
-                .padding(.top, 40) // This will now actually work
-                .padding(.horizontal, widgetFamily == .systemLarge ? 24 : 24)
+                .padding(.top, 40)
+                .padding(.horizontal, 25)
                 .padding(.bottom, 16)
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
                 .foregroundColor(.white)
@@ -202,11 +258,16 @@ struct HudanWidget: Widget {
     HudanWidget()
 } timeline: {
     HadithTimelineEntry.placeholder()
-    HadithTimelineEntry(date: .now, hadithID: 2, arabicText: "الى تشكيل والفلبين هو. أدنى الشرقية ما بين. وبدون أواخر قُدُماً دار هو. بـ دنو صفحة الشهير مشاركة, يتبقّ الحيلولة الا ثم. الإنزال ", summaryText: "When one of you asks from his Lord, let him ask for even more. Verily, he is asking from his lord Almighty.", referenceText: "Reference 2", textDisplayMode: .both, backgroundType: .default, selectedBackgroundIndex: 1)
+    HadithTimelineEntry(date: .now, hadithID: 2, arabicText: "الى تشكيل والفلبين هو. أدنى الشرقية ما بين. وبدون أواخر قُدُماً دار هو. بـ دنو صفحة الشهير مشاركة, يتبقّ الحيلولة الا ثم. الإنزال ", summaryText: "When one of you asks from his Lord, let him ask for even more. Verily, he is asking from his lord Almighty.", referenceText: "Sahih ibn hibban 889", textDisplayMode: .both, backgroundType: .default, selectedBackgroundIndex: 1)
+    HadithTimelineEntry(date: .now, hadithID: 2, arabicText: "الى تشكيل والفلبين هو. أدنى الشرقية ما بين. وبدون أواخر قُدُماً دار هو. بـ دنو صفحة الشهير مشاركة, يتبقّ الحيلولة الا ثم. الإنزال ", summaryText: "When one of you asks from his Lord, let him ask for even more. Verily, he is asking from his lord Almighty.", referenceText: "Sahih ibn hibban 889", textDisplayMode: .arabic, backgroundType: .default, selectedBackgroundIndex: 1)
+
 }
 
 #Preview(as: .systemLarge) {
     HudanWidget()
 } timeline: {
     HadithTimelineEntry.placeholder()
+    HadithTimelineEntry(date: .now, hadithID: 2, arabicText: "الى تشكيل والفلبين هو. أدنى الشرقية ما بين. وبدون أواخر قُدُماً دار هو. بـ دنو صفحة الشهير مشاركة, يتبقّ الحيلولة الا ثم. الإنزال ", summaryText: "When one of you asks from his Lord, let him ask for even more. Verily, he is asking from his lord Almighty.", referenceText: "Sahih ibn hibban 889", textDisplayMode: .both, backgroundType: .default, selectedBackgroundIndex: 1)
+    HadithTimelineEntry(date: .now, hadithID: 2, arabicText: "الى تشكيل والفلبين هو. أدنى الشرقية ما بين. وبدون أواخر قُدُماً دار هو. بـ دنو صفحة الشهير مشاركة, يتبقّ الحيلولة الا ثم. الإنزال ", summaryText: "When one of you asks from his Lord, let him ask for even more. Verily, he is asking from his lord Almighty.", referenceText: "Sahih ibn hibban 889", textDisplayMode: .arabic, backgroundType: .default, selectedBackgroundIndex: 1)
+
 }
