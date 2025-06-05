@@ -29,13 +29,6 @@ import SwiftUI
         self.hadithService = hadithService
     }
     
-    // Get a random hadith (different from the current one)
-    func getRandomHadith() -> Hadith? {
-        isLoading = true
-        let randomHadith = hadithService.getRandomHadith()
-        isLoading = false
-        return randomHadith
-    }
     
     // Utility: Get hadith by ID
     func getHadith(by id: Int) -> Hadith? {

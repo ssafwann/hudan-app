@@ -98,7 +98,7 @@ struct HadithTimelineEntry: TimelineEntry {
 struct HudanWidgetEntryView : View {
     var entry: HadithTimelineEntry
     @Environment(\.widgetFamily) var widgetFamily // For dynamic styling
-    
+
     // Computed styling properties (adjust these as needed after testing)
     private var summaryFontSize: CGFloat { widgetFamily == .systemLarge ? 18 : 14 }
     // UPDATED COMPUTED PROPERTY for REFERENCE FONT SIZE
@@ -166,13 +166,13 @@ struct HudanWidgetEntryView : View {
     private var arabicLineSpacing: CGFloat {
         widgetFamily == .systemLarge ? 14 : 12
     }
-    
+
     var body: some View {
         GeometryReader { geo in
-            ZStack {
+        ZStack {
                 // Background
-                if entry.backgroundType == .default {
-                    Image("bg\(entry.selectedBackgroundIndex + 3)")
+            if entry.backgroundType == .default {
+                Image("bg\(entry.selectedBackgroundIndex + 3)")
                         .resizable()
                         .scaledToFill()
                         .frame(width: geo.size.width, height: geo.size.height)
@@ -182,7 +182,7 @@ struct HudanWidgetEntryView : View {
                     Color(UIColor.systemBackground)
                 }
                 Color.black.opacity(0.3)
-                
+
                 VStack(alignment: .leading, spacing: VstackSpacing) {
                     // Arabic
                     if entry.textDisplayMode == .arabic || entry.textDisplayMode == .both {
@@ -198,7 +198,7 @@ struct HudanWidgetEntryView : View {
                                 .padding(.bottom, entry.textDisplayMode == .both ? 6 : 0)
                         }
                     }
-                    
+
                     // English
                     if entry.textDisplayMode == .english || entry.textDisplayMode == .both {
                         if let summaryText = entry.summaryText, !summaryText.isEmpty {
@@ -252,7 +252,7 @@ struct HudanWidget: Widget {
     }
 }
 
-    
+
 
 #Preview(as: .systemMedium) {
     HudanWidget()

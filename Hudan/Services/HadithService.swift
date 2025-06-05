@@ -14,7 +14,6 @@ import SwiftUI
     
     init() {
         loadHadiths()
-        loadLastHadithID()
         selectDailyHadith()
     }
     
@@ -26,103 +25,65 @@ import SwiftUI
         }
         
         do {
-            allHadiths = try JSONDecoder().decode([Hadith].self, from: data)
-            print("Successfully loaded \(allHadiths.count) hadiths")
+            var loadedHadiths = try JSONDecoder().decode([Hadith].self, from: data)
+            // Sort by ID to ensure consistent order for deterministic selection
+            loadedHadiths.sort { $0.id < $1.id }
+            self.allHadiths = loadedHadiths
+            print("Successfully loaded and sorted \(allHadiths.count) hadiths")
         } catch {
             print("Error decoding hadiths: \(error)")
         }
     }
     
-    private func loadLastHadithID() {
-        lastHadithID = UserDefaults.standard.integer(forKey: lastHadithIDKey)
-    }
-    
     func selectDailyHadith() {
-        guard !allHadiths.isEmpty else { return }
+        guard !allHadiths.isEmpty else {
+            currentHadith = nil
+            return
+        }
+
+        let currentUTCDate = getCurrentUTCDate()
+        // Use Gregorian calendar for consistent day of year calculation
+        let calendar = Calendar(identifier: .gregorian)
         
-        // Get the current date in UTC
-        let currentDate = getCurrentUTCDate()
-        
-        // Check if we need to select a new hadith (if it's a new day in UTC)
-        if shouldSelectNewHadith(currentUTCDate: currentDate) {
-            // Select a new random hadith that's different from the last one
-            let newHadith = getRandomHadithExcluding(id: lastHadithID)
-            currentHadith = newHadith
-            
-            // Save the new hadith ID and update date
-            lastHadithID = newHadith.id
-            UserDefaults.standard.set(lastHadithID, forKey: lastHadithIDKey)
-            UserDefaults.standard.set(currentDate, forKey: lastUpdateDateKey)
+        let dayOfYear = calendar.ordinality(of: .day, in: .year, for: currentUTCDate) ?? 1
+
+        let hadithCount = allHadiths.count
+        // Calculate a 0-based index. (dayOfYear - 1) because dayOfYear is 1-based.
+        // Ensure hadithCount is not zero to prevent division by zero if allHadiths is empty
+        // (though guarded above, this is an extra safety for the modulo).
+        let selectedIndex = hadithCount > 0 ? (dayOfYear - 1) % hadithCount : 0
+
+
+        if hadithCount > 0 {
+            let newSelectedHadith = allHadiths[selectedIndex]
+            self.currentHadith = newSelectedHadith
+
+            UserDefaults.standard.set(newSelectedHadith.id, forKey: lastHadithIDKey)
+            self.lastHadithID = newSelectedHadith.id // Update internal state if needed
+
+            let lastStoredUpdateDate = UserDefaults.standard.object(forKey: lastUpdateDateKey) as? Date
+            var shouldSaveNewUpdateDate = true
+            if let lastDate = lastStoredUpdateDate {
+                if calendar.isDate(lastDate, inSameDayAs: currentUTCDate) {
+                    shouldSaveNewUpdateDate = false
+                }
+            }
+
+            if shouldSaveNewUpdateDate {
+                UserDefaults.standard.set(currentUTCDate, forKey: lastUpdateDateKey)
+            }
         } else {
-            // If it's the same day, try to find the previously selected hadith
-            if lastHadithID >= 0 {
-                currentHadith = allHadiths.first(where: { $0.id == lastHadithID }) 
-            }
-            
-            // If we can't find the previous hadith (or none was selected), just pick a random one
-            if currentHadith == nil {
-                currentHadith = getRandomHadithExcluding(id: -1)
-                lastHadithID = currentHadith?.id ?? -1
-                UserDefaults.standard.set(lastHadithID, forKey: lastHadithIDKey)
-            }
+            // Fallback if allHadiths is empty after the initial guard (should not happen)
+            currentHadith = nil
         }
-    }
-    
-    // Get a random hadith excluding the one with the specified ID
-    private func getRandomHadithExcluding(id: Int) -> Hadith {
-        if allHadiths.count <= 1 {
-            return allHadiths[0] // If there's only one hadith, return it
-        }
-        
-        // Filter out the hadith with the excluded ID
-        let availableHadiths = allHadiths.filter { $0.id != id }
-        let randomIndex = Int.random(in: 0..<availableHadiths.count)
-        
-        return availableHadiths[randomIndex]
-    }
-    
-    // Check if we need to select a new hadith based on UTC date
-    private func shouldSelectNewHadith(currentUTCDate: Date) -> Bool {
-        guard let lastUpdateDate = UserDefaults.standard.object(forKey: lastUpdateDateKey) as? Date else {
-            // If there's no last update date, we should select a new hadith
-            return true
-        }
-        
-        // Get the date components for both dates in UTC
-        let calendar = Calendar.current
-        let currentComponents = calendar.dateComponents([.year, .month, .day], from: currentUTCDate)
-        let lastComponents = calendar.dateComponents([.year, .month, .day], from: lastUpdateDate)
-        
-        // If any of the components are different, it's a new day
-        return currentComponents.year != lastComponents.year ||
-               currentComponents.month != lastComponents.month ||
-               currentComponents.day != lastComponents.day
     }
     
     // Get the current date in UTC
     private func getCurrentUTCDate() -> Date {
-        let now = Date()
-        let utcCalendar = Calendar.current
-        var utcComponents = utcCalendar.dateComponents(in: TimeZone(identifier: "UTC")!, from: now)
-        
-        // Create a new date with UTC components
-        return utcCalendar.date(from: utcComponents) ?? now
-    }
-    
-    // Get a random hadith (different from the current one)
-    func getRandomHadith() -> Hadith? {
-        guard !allHadiths.isEmpty else { return nil }
-        
-        // Select a random hadith, but avoid the current one to prevent getting the same one again
-        let randomIndex = Int.random(in: 0..<allHadiths.count)
-        let randomHadith = allHadiths[randomIndex]
-        
-        if randomHadith.id == currentHadith?.id && allHadiths.count > 1 {
-            // If we got the current hadith and there's more than one, try again
-            return getRandomHadith()
-        }
-        
-        return randomHadith
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)! 
+        let components = calendar.dateComponents([.year, .month, .day], from: Date())
+        return calendar.date(from: components) ?? Date() // Fallback
     }
 }
 
