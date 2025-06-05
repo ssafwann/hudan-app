@@ -4,16 +4,15 @@ import SwiftUI
 
 struct HadithCard: View {
     let hadith: Hadith
-    @State private var contentHeight: CGFloat = 0
     
-    var contentView: some View {
-        VStack(alignment: .leading, spacing: 24) {
+    private var hadithContent: some View {
+        Group {
             Text(hadith.arabic)
                 .font(.custom("KFGQPCHAFSUthmanicScript-Regula", size: 26))
                 .foregroundColor(Color("HadithText"))
                 .multilineTextAlignment(.trailing)
                 .lineSpacing(-1)
-                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .trailing)
 
             Text("“\(hadith.english)”")
                 .font(.custom("EBGaramond-Regular", size: 18))
@@ -33,24 +32,21 @@ struct HadithCard: View {
                 .foregroundStyle(Color("NText"))
                 .frame(maxWidth: .infinity, alignment: .center)
 
-            GeometryReader { geometry in
-                // Wrapper to measure content height
-                VStack {
-                    // This will dynamically adjust
-                    contentView
-                        .background(
-                            GeometryReader { innerGeo in
-                                Color.clear
-                                    .preference(key: ViewHeightKey.self, value: innerGeo.size.height)
-                            }
-                        )
+            // Arabic + English text
+            ViewThatFits(in: .vertical) {
+                // Case 1: Content fits — no scroll
+                VStack(alignment: .leading, spacing: 24) {
+                    hadithContent
                 }
-                .frame(maxHeight: .infinity)
-                .onPreferenceChange(ViewHeightKey.self) { contentHeight in
-                    self.contentHeight = contentHeight
+
+                // Case 2: Content too big — enable scroll
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 24) {
+                        hadithContent
+                    }
                 }
+                .frame(maxHeight: 350)
             }
-            .frame(height: min(contentHeight, 350))
             
             Divider()
                 .background(Color("DivClr"))
@@ -87,13 +83,6 @@ struct HadithCard: View {
         .padding(.bottom, 24)
         .background(Color("CardBg"))
         .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
-}
-
-struct ViewHeightKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
     }
 }
 
