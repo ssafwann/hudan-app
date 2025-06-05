@@ -38,7 +38,7 @@ struct SettingsView: View {
                 Section {
                     // verse text option
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Verse Text")
+                        Text("Hadith Text")
                             .font(.custom("HelveticaNeue-Medium", size: 12))
                             .foregroundStyle(Color("DarkText"))
                             .kerning(-0.25)
