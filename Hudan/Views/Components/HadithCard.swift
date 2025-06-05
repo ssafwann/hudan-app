@@ -4,6 +4,25 @@ import SwiftUI
 
 struct HadithCard: View {
     let hadith: Hadith
+    @State private var contentHeight: CGFloat = 0
+    
+    var contentView: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            Text(hadith.arabic)
+                .font(.custom("KFGQPCHAFSUthmanicScript-Regula", size: 26))
+                .foregroundColor(Color("HadithText"))
+                .multilineTextAlignment(.trailing)
+                .lineSpacing(-1)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text("“\(hadith.english)”")
+                .font(.custom("EBGaramond-Regular", size: 18))
+                .foregroundColor(Color("HadithText"))
+                .fixedSize(horizontal: false, vertical: true)
+                .lineSpacing(4)
+                .kerning(-0.1)
+        }
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -14,26 +33,24 @@ struct HadithCard: View {
                 .foregroundStyle(Color("NText"))
                 .frame(maxWidth: .infinity, alignment: .center)
 
-            // Arabic + English text
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 24) {
-                    Text(hadith.arabic)
-                        .font(.custom("KFGQPCHAFSUthmanicScript-Regula", size: 26))
-                        .foregroundColor(Color("HadithText"))
-                        .multilineTextAlignment(.trailing)
-                        .lineSpacing(-1)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                    
-                    Text("“\(hadith.english)”")
-                        .font(.custom("EBGaramond-Regular", size: 18))
-                        .foregroundColor(Color("HadithText"))
-                        .fixedSize(horizontal: false, vertical: true)
-                        .lineSpacing(4)
-                        .kerning(-0.1)
+            GeometryReader { geometry in
+                // Wrapper to measure content height
+                VStack {
+                    // This will dynamically adjust
+                    contentView
+                        .background(
+                            GeometryReader { innerGeo in
+                                Color.clear
+                                    .preference(key: ViewHeightKey.self, value: innerGeo.size.height)
+                            }
+                        )
+                }
+                .frame(maxHeight: .infinity)
+                .onPreferenceChange(ViewHeightKey.self) { contentHeight in
+                    self.contentHeight = contentHeight
                 }
             }
-            .frame(idealHeight: 0, maxHeight: 350)
-            .scrollBounceBehavior(.basedOnSize)
+            .frame(height: min(contentHeight, 350))
             
             Divider()
                 .background(Color("DivClr"))
@@ -70,6 +87,13 @@ struct HadithCard: View {
         .padding(.bottom, 24)
         .background(Color("CardBg"))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+struct ViewHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
     }
 }
 
