@@ -1,249 +1,227 @@
 import WidgetKit
 import SwiftUI
 
+// MARK: - Timeline Provider
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> HadithTimelineEntry {
-        HadithTimelineEntry.placeholder()
+        .placeholder()
     }
 
     func getSnapshot(in context: Context, completion: @escaping (HadithTimelineEntry) -> ()) {
-        let entry = HadithTimelineEntry.snapshot()
+        let entry = getDailyHadithEntry()
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<HadithTimelineEntry>) -> ()) {
-        // 1. Access WidgetSettingsManager for current settings
-        let settings = WidgetSettingsManager.shared
-
-        // 2. Load Hadith data from JSON
-        var allHadiths: [Hadith] = []
-        // Ensure we use the widget's bundle to find the JSON.
-        if let url = Bundle.main.url(forResource: "hadiths", withExtension: "json"),
-           let data = try? Data(contentsOf: url) {
-            let decoder = JSONDecoder()
-            if let jsonData = try? decoder.decode([Hadith].self, from: data) {
-                allHadiths = jsonData
-            }
+        let entry = getDailyHadithEntry()
+        
+        // --- Smart Timeline Refresh ---
+        let calendar = Calendar(identifier: .gregorian)
+        guard let startOfTomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: Date())) else {
+            // Fallback to hourly refresh if date calculation fails
+            let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: Date())!
+            let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+            completion(timeline)
+            return
         }
 
-        // 3. Determine the Hadith to display
-        let currentHadithToDisplay: Hadith?
-        
-        currentHadithToDisplay = allHadiths.first
-        
-
-        // 4. Create the timeline entry
-        let entryDate = Date()
-        let entry: HadithTimelineEntry
-
-        if let hadith = currentHadithToDisplay {
-            entry = HadithTimelineEntry(
-                date: entryDate,
-                hadithID: hadith.id,
-                arabicText: hadith.arabic,
-                summaryText: hadith.summary, 
-                referenceText: hadith.ref,
-                textDisplayMode: settings.textDisplay,
-                backgroundType: settings.backgroundType,
-                selectedBackgroundIndex: settings.selectedBackgroundIndex
-            )
-        } else {
-            // Fallback to placeholder if no Hadith could be loaded
-            entry = HadithTimelineEntry.placeholder()
-        }
-
-        // 5. Create the timeline.
-        let nextUpdateDate = Calendar.current.date(byAdding: .hour, value: 1, to: entryDate)!
-        let timeline = Timeline(entries: [entry], policy: .after(nextUpdateDate))
-        
+        let timeline = Timeline(entries: [entry], policy: .after(startOfTomorrow))
         completion(timeline)
     }
-
-//    func relevances() async -> WidgetRelevances<Void> {
-//        // Generate a list containing the contexts this widget is relevant in.
-//    }
+    
+    // This is the core logic for selecting the daily hadith. It's now self-contained and correct.
+    private func getDailyHadithEntry() -> HadithTimelineEntry {
+        // 1. Load Hadith data from JSON
+        guard let url = Bundle.main.url(forResource: "hadiths", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              var hadiths = try? JSONDecoder().decode([Hadith].self, from: data),
+              !hadiths.isEmpty else {
+            return .placeholder() // Return placeholder if loading fails
+        }
+        
+        // 2. Sort hadiths to ensure consistent order
+        hadiths.sort { $0.id < $1.id }
+        
+        // 3. Deterministically select hadith based on the UTC day of the year
+        let calendar = Calendar(identifier: .gregorian)
+        let currentUTCDate = getCurrentUTCDate() // Use UTC date
+        let dayOfYear = calendar.ordinality(of: .day, in: .year, for: currentUTCDate) ?? 1
+        let selectedIndex = (dayOfYear - 1) % hadiths.count
+        let selectedHadith = hadiths[selectedIndex]
+        
+        // 4. Create the entry with default settings
+        return HadithTimelineEntry(date: Date(), hadith: selectedHadith)
+    }
+    
+    // Helper function to get the current date in UTC, ensuring sync with the main app's logic.
+    private func getCurrentUTCDate() -> Date {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let components = calendar.dateComponents([.year, .month, .day], from: Date())
+        return calendar.date(from: components) ?? Date()
+    }
 }
 
+// MARK: - Timeline Entry
 struct HadithTimelineEntry: TimelineEntry {
     let date: Date
+    let hadith: Hadith
     
-    let hadithID: Int?
-    let arabicText: String?
-    let summaryText: String?
-    let referenceText: String?
-    
-    // Settings from WidgetSettingsManager
-    let textDisplayMode: WidgetTextDisplay
-    let backgroundType: WidgetBackgroundType
-    let selectedBackgroundIndex: Int
+    // For now, settings are hardcoded. Later, this can be passed from the app via App Groups.
+    let textDisplayMode: WidgetTextDisplay = .both
+    let backgroundType: WidgetBackgroundType = .default
+    let selectedBackgroundIndex: Int = 1
     
     static func placeholder() -> HadithTimelineEntry {
         HadithTimelineEntry(
             date: Date(),
-            hadithID: 1,
-            arabicText: "الْأَعْمَالُ بِالنِّيَّاتِ", // Sample Arabic
-            summaryText: "When one of you asks from his Lord, let him ask for even more. Verily, he is asking from his lord Almighty.", // Sample English
-            referenceText: "SAHIH IBN HIBBAN 889",
-            textDisplayMode: .english, // Default display mode
-            backgroundType: .default, // Default background type
-            selectedBackgroundIndex: 2 // Default background index
+            hadith: Hadith(
+                id: 1,
+                narrator: "Umar bin Al-Khattab",
+                arabic: "إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ",
+                english: "The reward of deeds depends upon the intentions...",
+                summary: "The reward of deeds depends upon the intentions and every person will get the reward according to what he has intended.",
+                ref: "Sahih al-Bukhari 1",
+                inbook_ref: "Book 1, Hadith 1",
+                grade: "Sahih"
+            )
         )
-    }
-    
-    static func snapshot() -> HadithTimelineEntry {
-        placeholder()
     }
 }
 
+// MARK: - Widget View
 struct HudanWidgetEntryView : View {
     var entry: HadithTimelineEntry
-    @Environment(\.widgetFamily) var widgetFamily // For dynamic styling
-
-    // Computed styling properties (adjust these as needed after testing)
-    private var summaryFontSize: CGFloat { widgetFamily == .systemLarge ? 18 : 14 }
-    // UPDATED COMPUTED PROPERTY for REFERENCE FONT SIZE
-    private var referenceFontSize: CGFloat {
-        let isLarge = widgetFamily == .systemLarge
-        switch entry.textDisplayMode {
-        case .both:
-            return isLarge ? 11 : 9
-        case .arabic, .english:
-            return isLarge ? 13 : 11
-        }
-    }
-    // UPDATED COMPUTED PROPERTY for ARABIC FONT SIZE (with corrected sizes as per user feedback)
-    private var arabicFontSize: CGFloat {
-        let isLarge = widgetFamily == .systemLarge
-        switch entry.textDisplayMode {
-        case .both:
-            return isLarge ? 20 : 16 // Medium is 13, Large is 16
-        case .arabic:
-            return isLarge ? 22 : 18 // Medium is 14, Large is 18
-        case .english: // Arabic text not shown, but specify for completeness
-            return isLarge ? 22 : 18 // Medium is 14, Large is 18
-        }
-    }
-    private var textLineSpacing: CGFloat { widgetFamily == .systemLarge ? 8 : 4 }
-
-    // UPDATED COMPUTED PROPERTY for ARABIC LINE LIMIT
-    private var arabicLineLimit: Int {
-        let isLarge = widgetFamily == .systemLarge
-        switch entry.textDisplayMode {
-        case .arabic: // Arabic only
-            return isLarge ? 6 : 2
-        case .english: // English only
-            return 0 // Arabic text is not shown
-        case .both: // Both
-            return isLarge ? 3 : 1
-        }
-    }
-
-    // UPDATED COMPUTED PROPERTY for SUMMARY (ENGLISH) LINE LIMIT
-    private var summaryLineLimit: Int {
-        let isLarge = widgetFamily == .systemLarge
-        switch entry.textDisplayMode {
-        case .english: // English only
-            return isLarge ? 6 : 3
-        case .arabic: // Arabic only
-            return 0 // English text is not shown
-        case .both: // Both
-            return isLarge ? 3 : 1
-        }
-    }
-
-    // Reference line limit remains 1 as per existing code
-    private var referenceLineLimit: Int { 1 }
-    // UPDATED COMPUTED PROPERTY for VStackSpacing
-    private var VstackSpacing: CGFloat {
-        if entry.textDisplayMode == .arabic {
-            return 10 // 10 for both medium and large if only Arabic is shown
-        } else {
-            return widgetFamily == .systemLarge ? 10 : 6 // Default logic
-        }
-    }
     
-    // New computed property for Arabic-specific line spacing
-    private var arabicLineSpacing: CGFloat {
-        widgetFamily == .systemLarge ? 14 : 12
-    }
-
     var body: some View {
         GeometryReader { geo in
-        ZStack {
-                // Background
-            if entry.backgroundType == .default {
-                Image("bg\(entry.selectedBackgroundIndex + 3)")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: geo.size.width, height: geo.size.height)
-                        .clipped()
-                        .opacity(0.95)
-                } else {
-                    Color(UIColor.systemBackground)
-                }
-                Color.black.opacity(0.3)
-
-                VStack(alignment: .leading, spacing: VstackSpacing) {
-                    // Arabic
-                    if entry.textDisplayMode == .arabic || entry.textDisplayMode == .both {
-                        if let arabicText = entry.arabicText, !arabicText.isEmpty {
-                            Text(arabicText)
-                                .font(.custom("KFGQPCHAFSUthmanicScript-Regula", size: arabicFontSize))
-                                .foregroundColor(Color("White"))
-                                .lineSpacing(arabicLineSpacing)
-                                .multilineTextAlignment(.trailing)
-                                .environment(\.layoutDirection, .rightToLeft)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                                .lineLimit(arabicLineLimit)
-                                .padding(.bottom, entry.textDisplayMode == .both ? 6 : 0)
-                        }
-                    }
-
-                    // English
-                    if entry.textDisplayMode == .english || entry.textDisplayMode == .both {
-                        if let summaryText = entry.summaryText, !summaryText.isEmpty {
-                            Text(summaryText)
-                                .font(.custom("Georgia", size: summaryFontSize))
-                                .foregroundColor(Color("White"))
-                                .lineSpacing(textLineSpacing)
-                                .multilineTextAlignment(.leading)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .lineLimit(summaryLineLimit)
-                        }
-                    }
-                    
-                    // Reference
-                    if let referenceText = entry.referenceText, !referenceText.isEmpty {
-                        Text(referenceText.uppercased())
-                            .font(.custom("HelveticaNeue", size: referenceFontSize))
-                            .foregroundColor(Color("Reference"))
-                            .frame(maxWidth: .infinity, alignment: entry.textDisplayMode == .arabic ? .trailing : .leading)
-                            .lineLimit(referenceLineLimit)
-                    }
-                }
-                .padding(.top, 40)
-                .padding(.horizontal, 25)
-                .padding(.bottom, 16)
-                .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
-                .foregroundColor(.white)
+            ZStack {
+                WidgetBackgroundView(
+                    type: entry.backgroundType,
+                    index: entry.selectedBackgroundIndex
+                )
+                .frame(width: geo.size.width, height: geo.size.height)
+                
+                WidgetContentView(entry: entry)
+                    .padding(.top, 40)
+                    .padding(.horizontal, 25)
+                    .padding(.bottom, 16)
             }
         }
     }
 }
 
+// MARK: - Subviews
+private struct WidgetBackgroundView: View {
+    let type: WidgetBackgroundType
+    let index: Int
+    
+    var body: some View {
+        ZStack {
+            if type == .default {
+                Image("bg\(index + 3)")
+                    .resizable()
+                    .scaledToFill()
+                    .opacity(0.95)
+            } else {
+                Color(UIColor.systemBackground)
+            }
+            Color.black.opacity(0.3) // Readability overlay
+        }
+    }
+}
+
+private struct WidgetContentView: View {
+    let entry: HadithTimelineEntry
+    @Environment(\.widgetFamily) private var widgetFamily
+
+    private var isLargeFamily: Bool { widgetFamily == .systemLarge }
+    
+    private var summaryFontSize: CGFloat { isLargeFamily ? 18 : 14 }
+    private var referenceFontSize: CGFloat {
+        switch entry.textDisplayMode {
+        case .both: return isLargeFamily ? 11 : 9
+        case .arabic, .english: return isLargeFamily ? 13 : 11
+        }
+    }
+    private var arabicFontSize: CGFloat {
+        switch entry.textDisplayMode {
+        case .both: return isLargeFamily ? 20 : 16
+        case .arabic: return isLargeFamily ? 22 : 18
+        case .english: return 0
+        }
+    }
+    
+    private var summaryLineLimit: Int {
+        switch entry.textDisplayMode {
+        case .english: return isLargeFamily ? 6 : 3
+        case .arabic: return 0
+        case .both: return isLargeFamily ? 3 : 1
+        }
+    }
+    private var arabicLineLimit: Int {
+        switch entry.textDisplayMode {
+        case .arabic: return isLargeFamily ? 6 : 2
+        case .english: return 0
+        case .both: return isLargeFamily ? 3 : 1
+        }
+    }
+    
+    private var vStackSpacing: CGFloat {
+        if entry.textDisplayMode == .arabic {
+            return 10
+        } else {
+            return isLargeFamily ? 10 : 6
+        }
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: vStackSpacing) {
+            // Arabic Text
+            if entry.textDisplayMode == .arabic || entry.textDisplayMode == .both {
+                Text(entry.hadith.arabic)
+                    .font(.custom("KFGQPCHAFSUthmanicScript-Regula", size: arabicFontSize))
+                    .foregroundColor(.white)
+                    .lineSpacing(isLargeFamily ? 14 : 12)
+                    .multilineTextAlignment(.trailing)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .lineLimit(arabicLineLimit)
+                    .padding(.bottom, entry.textDisplayMode == .both ? 6 : 0)
+            }
+
+            // English/Summary Text
+            if entry.textDisplayMode == .english || entry.textDisplayMode == .both {
+                Text(entry.hadith.summary)
+                    .font(.custom("Georgia", size: summaryFontSize))
+                    .foregroundColor(.white)
+                    .lineSpacing(isLargeFamily ? 8 : 4)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(summaryLineLimit)
+            }
+            
+            // Reference Text
+            Text(entry.hadith.ref.uppercased())
+                .font(.custom("HelveticaNeue", size: referenceFontSize))
+                .foregroundColor(Color("Reference"))
+                .frame(maxWidth: .infinity, alignment: entry.textDisplayMode == .arabic ? .trailing : .leading)
+                .lineLimit(1)
+            
+            // This Spacer pushes all the content above it to the top.
+            Spacer(minLength: 0)
+        }
+        .environment(\.layoutDirection, entry.textDisplayMode == .arabic ? .rightToLeft : .leftToRight)
+    }
+}
+
+
+// MARK: - Widget Configuration
 struct HudanWidget: Widget {
     let kind: String = "HudanWidget"
-    
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            if #available(iOS 17.0, *) {
-                HudanWidgetEntryView(entry: entry)
-                    .containerBackground(Color.clear, for: .widget)
-            } else {
-                HudanWidgetEntryView(entry: entry)
-                    .background(Color.clear)
-            }
+            HudanWidgetEntryView(entry: entry)
+                .containerBackground(.clear, for: .widget)
         }
         .configurationDisplayName("Daily Hadith")
         .description("Displays a daily hadith from Hudan.")
@@ -252,22 +230,15 @@ struct HudanWidget: Widget {
     }
 }
 
-
-
+// MARK: - Previews
 #Preview(as: .systemMedium) {
     HudanWidget()
 } timeline: {
     HadithTimelineEntry.placeholder()
-    HadithTimelineEntry(date: .now, hadithID: 2, arabicText: "الى تشكيل والفلبين هو. أدنى الشرقية ما بين. وبدون أواخر قُدُماً دار هو. بـ دنو صفحة الشهير مشاركة, يتبقّ الحيلولة الا ثم. الإنزال ", summaryText: "When one of you asks from his Lord, let him ask for even more. Verily, he is asking from his lord Almighty.", referenceText: "Sahih ibn hibban 889", textDisplayMode: .both, backgroundType: .default, selectedBackgroundIndex: 1)
-    HadithTimelineEntry(date: .now, hadithID: 2, arabicText: "الى تشكيل والفلبين هو. أدنى الشرقية ما بين. وبدون أواخر قُدُماً دار هو. بـ دنو صفحة الشهير مشاركة, يتبقّ الحيلولة الا ثم. الإنزال ", summaryText: "When one of you asks from his Lord, let him ask for even more. Verily, he is asking from his lord Almighty.", referenceText: "Sahih ibn hibban 889", textDisplayMode: .arabic, backgroundType: .default, selectedBackgroundIndex: 1)
-
 }
 
 #Preview(as: .systemLarge) {
     HudanWidget()
 } timeline: {
     HadithTimelineEntry.placeholder()
-    HadithTimelineEntry(date: .now, hadithID: 2, arabicText: "الى تشكيل والفلبين هو. أدنى الشرقية ما بين. وبدون أواخر قُدُماً دار هو. بـ دنو صفحة الشهير مشاركة, يتبقّ الحيلولة الا ثم. الإنزال ", summaryText: "When one of you asks from his Lord, let him ask for even more. Verily, he is asking from his lord Almighty.", referenceText: "Sahih ibn hibban 889", textDisplayMode: .both, backgroundType: .default, selectedBackgroundIndex: 1)
-    HadithTimelineEntry(date: .now, hadithID: 2, arabicText: "الى تشكيل والفلبين هو. أدنى الشرقية ما بين. وبدون أواخر قُدُماً دار هو. بـ دنو صفحة الشهير مشاركة, يتبقّ الحيلولة الا ثم. الإنزال ", summaryText: "When one of you asks from his Lord, let him ask for even more. Verily, he is asking from his lord Almighty.", referenceText: "Sahih ibn hibban 889", textDisplayMode: .arabic, backgroundType: .default, selectedBackgroundIndex: 1)
-
 }
