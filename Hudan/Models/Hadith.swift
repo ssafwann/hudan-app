@@ -1,5 +1,3 @@
-// hadith data model
-
 import Foundation
 
 struct Hadith: Identifiable, Codable {

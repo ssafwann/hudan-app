@@ -1,5 +1,3 @@
-// Header for the home screen
-
 import SwiftUI
 
 struct HeaderView: View {

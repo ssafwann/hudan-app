@@ -42,15 +42,12 @@ import SwiftUI
         }
 
         let currentUTCDate = getCurrentUTCDate()
-        // Use Gregorian calendar for consistent day of year calculation
+
         let calendar = Calendar(identifier: .gregorian)
         
         let dayOfYear = calendar.ordinality(of: .day, in: .year, for: currentUTCDate) ?? 1
 
         let hadithCount = allHadiths.count
-        // Calculate a 0-based index. (dayOfYear - 1) because dayOfYear is 1-based.
-        // Ensure hadithCount is not zero to prevent division by zero if allHadiths is empty
-        // (though guarded above, this is an extra safety for the modulo).
         let selectedIndex = hadithCount > 0 ? (dayOfYear - 1) % hadithCount : 0
 
 

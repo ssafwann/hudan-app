@@ -11,7 +11,7 @@ enum DateHelpers {
         return utcCalendar.date(from: utcComponents) ?? now
     }
     
-    // Format date for display in header (e.g., "Fri, 16 May 2025")
+    // Format date for display in header
     static func formatDateForHeader(_ date: Date = Date()) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "E, d MMM yyyy"

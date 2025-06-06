@@ -29,7 +29,6 @@ import SwiftUI
         self.hadithService = hadithService
     }
     
-    
     // Utility: Get hadith by ID
     func getHadith(by id: Int) -> Hadith? {
         return allHadiths.first(where: { $0.id == id })

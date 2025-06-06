@@ -58,8 +58,6 @@ struct InfoView: View {
                                     .foregroundColor(Color("DarkText"))
                                     .lineSpacing(4)
                                 */
-
-                                
                             }
                             
                             // FEEDBACK & SUGGESTIONS Section

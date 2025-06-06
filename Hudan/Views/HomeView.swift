@@ -1,13 +1,4 @@
-// main hadith display
-
 import SwiftUI
-
-// AlQuranIndoPakbyQuranWBW
-// EBGaramond-Regular
-// EBGaramondRoman-SemiBold
-// KFGQPCHAFSUthmanicScript-Regula
-// Georgia
-// HelveticaNeue
 
 struct HomeView: View {
     let model: HadithViewModel

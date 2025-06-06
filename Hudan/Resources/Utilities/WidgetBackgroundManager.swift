@@ -3,7 +3,7 @@ import SwiftUI
 // manages background images for the widget
 struct WidgetBackgroundManager {
     static let backgroundImages: [String] = [
-        "bg1",    // Index 0 - Default background
+        "bg1",    // index 0, Default background
         "bg2",
         "bg3",
         "bg4",

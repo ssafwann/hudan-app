@@ -1,7 +1,6 @@
 import WidgetKit
 import SwiftUI
 
-// MARK: - Timeline Provider
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> HadithTimelineEntry {
         .placeholder()
@@ -89,7 +88,7 @@ struct HadithTimelineEntry: TimelineEntry {
     }
 }
 
-// MARK: - Widget View
+// widget view
 struct HudanWidgetEntryView : View {
     var entry: HadithTimelineEntry
     
@@ -111,7 +110,7 @@ struct HudanWidgetEntryView : View {
     }
 }
 
-// MARK: - Subviews
+// subviews
 private struct WidgetBackgroundView: View {
     let type: WidgetBackgroundType
     let index: Int
@@ -214,7 +213,7 @@ private struct WidgetContentView: View {
 }
 
 
-// MARK: - Widget Configuration
+// widget configuration
 struct HudanWidget: Widget {
     let kind: String = "HudanWidget"
 
@@ -230,7 +229,6 @@ struct HudanWidget: Widget {
     }
 }
 
-// MARK: - Previews
 #Preview(as: .systemMedium) {
     HudanWidget()
 } timeline: {

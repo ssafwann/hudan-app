@@ -1,5 +1,3 @@
-// Hadith display component
-
 import SwiftUI
 
 struct HadithCard: View {
