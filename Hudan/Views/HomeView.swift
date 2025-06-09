@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     let model: HadithViewModel
     // tracker whether the settings should be shown
     @State private var showSettings = false
@@ -27,7 +28,12 @@ struct HomeView: View {
         .padding(.horizontal, 20)
         .background(Color("MainBg"))
         .sheet(isPresented: $showSettings) {
-            SettingsView()
+            if horizontalSizeClass == .compact {
+                SettingsView()
+                    .presentationDetents([.fraction(0.45)])
+            } else {
+                SettingsView()
+            }
         }
     }
 }

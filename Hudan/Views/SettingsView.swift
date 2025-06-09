@@ -153,7 +153,6 @@ struct SettingsView: View {
         }
         .background(Color("White").edgesIgnoringSafeArea(.all))
         // sheet height
-        .presentationDetents([.fraction(0.45)])
         .presentationCornerRadius(24)
         .presentationDragIndicator(.visible)
         .fullScreenCover(isPresented: $showInfoView) {
