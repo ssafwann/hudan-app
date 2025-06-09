@@ -62,7 +62,7 @@ struct SettingsView: View {
                                                         .stroke(settings.textDisplay == option ? Color.clear : Color("BtnBorder"), lineWidth: 2)
                                                 )
                                         )
-                                        .foregroundColor(settings.textDisplay == option ? .white : .primary)
+                                        .foregroundColor(settings.textDisplay == option ? .white : Color("HadithText"))
                                 }
                                 .buttonStyle(.borderless)
                             }
@@ -95,13 +95,13 @@ struct SettingsView: View {
                                                         .stroke(settings.backgroundType == option ? Color.clear : Color("BtnBorder"), lineWidth: 2)
                                                 )
                                         )
-                                        .foregroundColor(settings.backgroundType == option ? .white : .primary)
+                                        .foregroundColor(settings.backgroundType == option ? .white : Color("HadithText"))
                                 }
                                 .buttonStyle(.borderless)
                             }
                         }
                         
-                        // if settings.backgroundType == .default { // Show image selection when .default is selected
+                        // Show image selection only for .default background type
                         if settings.backgroundType == .default {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
@@ -135,6 +135,8 @@ struct SettingsView: View {
                                     }
                                 }
                             }
+                        } else if settings.backgroundType == .custom {
+                            CustomBgPicker()
                         }
                     }
                     // gap between 2 sections
