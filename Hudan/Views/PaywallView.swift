@@ -6,6 +6,8 @@ struct PaywallView: View {
     // This action will be called when the user 'successfully' purchases.
     var onPurchaseSuccess: () -> Void
     
+    @State private var gifData: Data?
+    
     var body: some View {
         VStack(spacing: 25) {
             // Header with Close Button
@@ -36,10 +38,19 @@ struct PaywallView: View {
 
             }
 
-            // Replace the Image Placeholder with our new GIFView
-            GIFView("paywall") // Use the name of your file without .gif
-                .frame(height: 175)
-                .cornerRadius(20)
+            // GIF View with Placeholder
+            ZStack {
+                // Placeholder view
+                Color(.systemGray6)
+                ProgressView()
+
+                // The GIFView will appear once the data is loaded
+                if let gifData {
+                    GIFView(data: gifData)
+                }
+            }
+            .frame(height: 175)
+            .cornerRadius(20)
 
             // Feature List
             VStack(alignment: .leading, spacing: 15) {
@@ -80,6 +91,20 @@ struct PaywallView: View {
         .cornerRadius(20)
         .shadow(radius: 10)
         .padding(.horizontal, 20)
+        .onAppear(perform: loadGIF)
+    }
+    
+    private func loadGIF() {
+        // Load the GIF data asynchronously to avoid blocking the UI
+        DispatchQueue.global().async {
+            guard let url = Bundle.main.url(forResource: "paywall", withExtension: "gif"),
+                  let data = try? Data(contentsOf: url) else {
+                return
+            }
+            DispatchQueue.main.async {
+                self.gifData = data
+            }
+        }
     }
 }
 
