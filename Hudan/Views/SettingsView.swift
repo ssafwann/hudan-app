@@ -4,6 +4,10 @@ struct SettingsView: View {
     @StateObject private var settings = WidgetSettingsManager.shared
     @State private var showInfoView = false
     
+    // State to manage paywall presentation and feature access
+    @State private var showPaywall = false
+    @State private var isFeatureUnlocked = false
+    
     var body: some View {
         VStack(spacing: 0,) {
             // header
@@ -136,7 +140,9 @@ struct SettingsView: View {
                                 }
                             }
                         } else if settings.backgroundType == .custom {
-                            CustomBgPicker()
+                            CustomBgPicker(isFeatureUnlocked: isFeatureUnlocked) {
+                                showPaywall = true
+                            }
                         }
                     }
                     // gap between 2 sections
@@ -163,6 +169,19 @@ struct SettingsView: View {
         .presentationDragIndicator(.visible)
         .fullScreenCover(isPresented: $showInfoView) {
             InfoView()
+        }
+        .fullScreenCover(isPresented: $showPaywall) {
+            ZStack {
+                Color.black.opacity(0.4).ignoresSafeArea()
+                PaywallView(
+                    onDismiss: { showPaywall = false },
+                    onPurchaseSuccess: {
+                        isFeatureUnlocked = true
+                        showPaywall = false
+                    }
+                )
+            }
+            .presentationBackground(.clear)
         }
     }
 }

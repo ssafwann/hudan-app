@@ -2,9 +2,9 @@ import SwiftUI
 import PhotosUI
 
 struct CustomBgPicker: View {
-    // This state simulates whether the user has paid for the feature.
-    // Set to 'true' to test the photo picker, 'false' to test the paywall path.
-    @State private var isFeatureUnlocked = true
+    // These values are passed in from the parent view.
+    let isFeatureUnlocked: Bool
+    var onButtonTapped: () -> Void
 
     // State for the PhotosPicker view
     @State private var showPhotosPicker = false
@@ -17,11 +17,9 @@ struct CustomBgPicker: View {
         VStack {
             Button(action: {
                 if isFeatureUnlocked {
-                    // If unlocked, show the photo picker
                     showPhotosPicker = true
                 } else {
-                    // If locked, this is where we'll show the paywall later
-                    print("Paywall would be shown here.")
+                    onButtonTapped()
                 }
             }) {
                 HStack(spacing: 8) {
@@ -38,10 +36,7 @@ struct CustomBgPicker: View {
                 .padding(.vertical, 30)
                 .background(Color("CustomBgBtn"))
                 .cornerRadius(14)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14)
-                        .stroke(Color("UBtn"), lineWidth: 1)
-                )            }
+            }
             .buttonStyle(.plain)
             .photosPicker(isPresented: $showPhotosPicker, selection: $selectedPhotoItem, matching: .images)
             .onChange(of: selectedPhotoItem) { _, newItem in
@@ -85,7 +80,6 @@ struct CustomBgPicker: View {
 }
 
 #Preview {
-    CustomBgPicker()
-        .padding()
+    CustomBgPicker(isFeatureUnlocked: false, onButtonTapped: {})
 }
 
