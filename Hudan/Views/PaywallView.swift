@@ -7,6 +7,7 @@ struct PaywallView: View {
     var onPurchaseSuccess: () -> Void
     
     @State private var gifData: Data?
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     
     var body: some View {
         VStack(spacing: 25) {
@@ -49,7 +50,7 @@ struct PaywallView: View {
                     GIFView(data: gifData)
                 }
             }
-            .frame(height: 175)
+            .aspectRatio(16/9, contentMode: .fit)
             .cornerRadius(20)
 
             // Feature List

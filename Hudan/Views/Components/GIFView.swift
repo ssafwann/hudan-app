@@ -11,12 +11,24 @@ struct GIFView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let webView = WKWebView()
         
-        webView.load(
-            data,
-            mimeType: "image/gif",
-            characterEncodingName: "UTF-8",
-            baseURL: Bundle.main.resourceURL!
-        )
+        // Create a responsive HTML string
+        let htmlString = """
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+            <style>
+                body { margin: 0; background-color: transparent; }
+                img { width: 100%; height: auto; }
+            </style>
+        </head>
+        <body>
+            <img src="data:image/gif;base64,\(data.base64EncodedString())" />
+        </body>
+        </html>
+        """
+
+        webView.loadHTMLString(htmlString, baseURL: nil)
+        
         // Make the background of the web view transparent
         webView.isOpaque = false
         webView.backgroundColor = .clear
