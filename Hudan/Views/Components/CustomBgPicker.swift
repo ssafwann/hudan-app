@@ -19,7 +19,7 @@ struct CustomBgPicker: View {
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(Color("PrimaryGreen"))
                 }
-                Text("Set custom background")
+                Text(isFeatureUnlocked ? "Add backgrounds" : "Unlock custom features")
             }
             .font(.custom("HelveticaNeue-Medium", size: 12))
             .foregroundColor(Color("HadithText"))
