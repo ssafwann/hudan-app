@@ -149,7 +149,7 @@ struct SettingsView: View {
                             })
 
                             if !customBgManager.savedImages.isEmpty {
-                                CustomBgsRow()
+                                CustomBgRow()
                                     .padding(.top, 12)
                             }
                         }
