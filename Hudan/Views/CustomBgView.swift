@@ -9,75 +9,72 @@ struct CustomBgView: View {
     @State private var selectedImage: Image?
     
     var body: some View {
-        ZStack {
-            // Semi-transparent background, tapping it dismisses the view
-            Color.black.opacity(0.4)
-                .edgesIgnoringSafeArea(.all)
-                .onTapGesture {
-                    isPresented = false
+        VStack(spacing: 25) {
+            // Header with Close Button, just like PaywallView
+            HStack {
+                Spacer()
+                Button(action: { isPresented = false }) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(Color("UBtnContent"))
+                        .clipShape(Circle())
                 }
-            
-            VStack(spacing: 20) {
-                // Header with Title and Close Button
-                HStack {
-                    Text("Your Custom Background")
-                        .font(.custom("HelveticaNeue-Medium", size: 20))
-                        .foregroundColor(Color("HadithText"))
-                    
-                    Spacer()
-                    
-                    Button(action: { isPresented = false }) {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(Color("UBtnContent"))
-                            .clipShape(Circle())
-                    }
-                }
+            }.padding(.bottom, -15)
+
+            // Main Content, title is now here
+            VStack(spacing: 15) {
+                Text("Select Your Background")
+                    .font(.custom("HelveticaNeue-Medium", size: 20))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .foregroundColor(Color("HadithText"))
                 
-                // Image Picker Area
-                PhotosPicker(
-                    selection: $selectedItem,
-                    matching: .images,
-                    photoLibrary: .shared()
-                ) {
-                    ZStack {
-                        if let selectedImage {
-                            selectedImage
-                                .resizable()
-                                .scaledToFill()
-                        } else {
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color(.systemGray6))
-                            
-                            Image(systemName: "plus")
-                                .font(.largeTitle)
-                                .foregroundColor(.gray)
-                        }
-                    }
-                    .frame(height: 200)
-                    .cornerRadius(20)
-                }
-                .onChange(of: selectedItem) { newItem in
-                    Task {
-                        if let data = try? await newItem?.loadTransferable(type: Data.self) {
-                            selectedImageData = data
-                            if let uiImage = UIImage(data: data) {
-                                selectedImage = Image(uiImage: uiImage)
-                            }
-                        }
-                    }
-                }
-                
-                Text("Tap the area above to select an image from your photo library. This will be your new widget background.")
+                Text("Tap the area below to select an image from your photo library.")
                     .font(.custom("HelveticaNeue-Light", size: 14))
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .tracking(0.6)
                     .lineSpacing(1)
-                
-                // Action Button
+            }
+            
+            // Image Picker Area
+            PhotosPicker(
+                selection: $selectedItem,
+                matching: .images,
+                photoLibrary: .shared()
+            ) {
+                ZStack {
+                    if let selectedImage {
+                        selectedImage
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.systemGray6))
+                        
+                        Image(systemName: "plus")
+                            .font(.largeTitle)
+                            .foregroundColor(.gray)
+                    }
+                }
+                .frame(height: 200)
+                .cornerRadius(20)
+            }
+            .onChange(of: selectedItem) {
+                Task {
+                    if let selectedItem, let data = try? await selectedItem.loadTransferable(type: Data.self) {
+                        selectedImageData = data
+                        if let uiImage = UIImage(data: data) {
+                            selectedImage = Image(uiImage: uiImage)
+                        }
+                    }
+                }
+            }
+
+            // Action Button
+            VStack {
                 Button(action: saveAndDismiss) {
-                    Text("Done")
+                    Text("Save Background")
                         .font(.custom("HelveticaNeue-Bold", size: 16))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -87,16 +84,16 @@ struct CustomBgView: View {
                 }
                 .disabled(selectedImage == nil)
                 .opacity(selectedImage == nil ? 0.5 : 1.0)
-                .padding(.top, 10)
-            }
-            .padding(.horizontal, 25)
-            .padding(.bottom, 40)
-            .padding(.top, 25)
-            .background(Color("White"))
-            .cornerRadius(20)
-            .shadow(radius: 10)
-            .padding(.horizontal, 20)
+            }.padding(.top, 10)
+
         }
+        .padding(.horizontal, 25)
+        .padding(.bottom, 40)
+        .padding(.top, 25)
+        .background(Color("White"))
+        .cornerRadius(20)
+        .shadow(radius: 10)
+        .padding(.horizontal, 20)
     }
     
     private func saveAndDismiss() {

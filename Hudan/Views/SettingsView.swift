@@ -180,18 +180,24 @@ struct SettingsView: View {
             InfoView()
         }
         .fullScreenCover(isPresented: $showPaywall) {
-            PaywallView(
-                onDismiss: { showPaywall = false },
-                onPurchaseSuccess: {
-                    purchaseManager.purchase()
-                    showPaywall = false
-                }
-            )
+            ZStack {
+                Color.black.opacity(0.4).ignoresSafeArea()
+                PaywallView(
+                    onDismiss: { showPaywall = false },
+                    onPurchaseSuccess: {
+                        purchaseManager.purchase()
+                        showPaywall = false
+                    }
+                )
+            }
             .presentationBackground(.clear)
         }
         .fullScreenCover(isPresented: $showCustomBgView) {
-            CustomBgView(isPresented: $showCustomBgView)
-                .presentationBackground(.clear)
+            ZStack {
+                Color.black.opacity(0.4).ignoresSafeArea()
+                CustomBgView(isPresented: $showCustomBgView)
+            }
+            .presentationBackground(.clear)
         }
     }
 }
