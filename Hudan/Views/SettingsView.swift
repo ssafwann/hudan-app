@@ -142,15 +142,28 @@ struct SettingsView: View {
                                 }
                             }
                         } else if settings.backgroundType == .custom {
-                            CustomBgPicker(isFeatureUnlocked: purchaseManager.isFeatureUnlocked, onSelect: {
-                                showCustomBgView = true
-                            }, onLock: {
-                                showPaywall = true
-                            })
-
-                            if !customBgManager.savedImages.isEmpty {
-                                CustomBgRow()
-                                    .padding(.top, 12)
+                            if purchaseManager.isFeatureUnlocked {
+                                // If the feature is unlocked, show the new row with the integrated Add button.
+                                CustomBgRow(
+                                    onAdd: { showCustomBgView = true }
+                                )
+                            } else {
+                                // If the feature is locked, show the old unlock button.
+                                Button(action: { showPaywall = true }) {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "lock.fill")
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(Color("PrimaryGreen"))
+                                        Text("Unlock custom features")
+                                    }
+                                    .font(.custom("HelveticaNeue-Medium", size: 12))
+                                    .foregroundColor(Color("HadithText"))
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 30)
+                                    .background(Color("CustomBgBtn"))
+                                    .cornerRadius(14)
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
                     }

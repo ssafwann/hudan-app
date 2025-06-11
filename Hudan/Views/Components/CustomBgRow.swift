@@ -1,27 +1,58 @@
-
 import SwiftUI
 
 struct CustomBgRow: View {
     @ObservedObject var customBgManager = CustomBgManager.shared
-    
+    var onAdd: () -> Void
+
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
-                ForEach(customBgManager.savedImages) { image in
-                    CustomBgItem(
-                        imageData: image.data,
-                        isSelected: customBgManager.selectedImageID == image.id,
-                        onSelect: {
-                            customBgManager.selectImage(with: image.id)
-                        },
-                        onDelete: {
-                            customBgManager.deleteImage(with: image.id)
-                        }
-                    )
+        HStack(spacing: 12) {
+            // A fixed button to add a new background
+            AddBackgroundButton(onAdd: onAdd)
+            
+            // A scrollable list for the saved images
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(customBgManager.savedImages) { image in
+                        CustomBgItem(
+                            imageData: image.data,
+                            isSelected: customBgManager.selectedImageID == image.id,
+                            onSelect: {
+                                customBgManager.selectImage(with: image.id)
+                            },
+                            onDelete: {
+                                customBgManager.deleteImage(with: image.id)
+                            }
+                        )
+                    }
                 }
             }
-            .padding(.horizontal)
         }
+        .padding(.horizontal)
+    }
+}
+
+private struct AddBackgroundButton: View {
+    var onAdd: () -> Void
+    
+    var body: some View {
+        Button(action: onAdd) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color("CustomBgBtn"))
+                
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color("LightText"), lineWidth: 1)
+                
+                Image(systemName: "plus")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundColor(Color("HadithText"))
+            }
+            .frame(width: 64, height: 64)
+        }
+        .buttonStyle(.plain)
+        // Apply matching padding to ensure vertical alignment with CustomBgItem
+        .padding(.top, 8)
+        .padding(.trailing, 8)
     }
 }
 
@@ -39,28 +70,31 @@ private struct CustomBgItem: View {
                         Image(uiImage: uiImage)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: 64, height: 64)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
                     } else {
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.gray)
-                            .frame(width: 64, height: 64)
-                    }
-                    
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color("LightText"), lineWidth: 1)
-                    
-                    if isSelected {
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.black.opacity(0.3))
-                        Image("TickIcon")
-                            .resizable()
-                            .frame(width: 18, height: 18)
-                            .foregroundColor(.white)
+                        Color.gray
                     }
                 }
+                .frame(width: 64, height: 64)
+                .background(Color.gray)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color("LightText"), lineWidth: 1)
+                )
             }
             .buttonStyle(.plain)
+            
+            if isSelected {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.black.opacity(0.3))
+                    Image("TickIcon")
+                        .resizable()
+                        .frame(width: 18, height: 18)
+                        .foregroundColor(.white)
+                }
+                .frame(width: 64, height: 64)
+            }
             
             Button(action: onDelete) {
                 Image(systemName: "xmark.circle.fill")
@@ -76,5 +110,5 @@ private struct CustomBgItem: View {
 }
 
 #Preview {
-    CustomBgRow()
+    CustomBgRow(onAdd: {})
 }
