@@ -28,7 +28,7 @@ final class CustomBgManager: ObservableObject {
     func saveImage(data: Data) {
         // Create a new image object
         let newImage = CustomBgImage(id: UUID(), data: data)
-        savedImages.append(newImage)
+        savedImages.insert(newImage, at: 0)
         persistSavedImages()
         
         // Automatically select the newly added image
