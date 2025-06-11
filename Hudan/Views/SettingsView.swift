@@ -128,7 +128,7 @@ struct SettingsView: View {
 
                                                         if settings.selectedBackgroundIndex == index {
                                                             RoundedRectangle(cornerRadius: 8)
-                                                                .fill(Color.black.opacity(0.3)) // Slight dim for better checkmark visibility
+                                                                .fill(Color.black.opacity(0.4)) // Slight dim for better checkmark visibility
                                                             Image("TickIcon")
                                                                 .resizable()
                                                                 .frame(width: 18, height: 18)          

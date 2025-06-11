@@ -27,7 +27,6 @@ struct CustomBgRow: View {
                 }
             }
         }
-        .padding(.horizontal)
     }
 }
 
@@ -41,10 +40,11 @@ private struct AddBackgroundButton: View {
                     .fill(Color("CustomBgBtn"))
                 
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color("LightText"), lineWidth: 1)
+                    .stroke(Color("UBtn"), lineWidth: 1)
+
                 
                 Image(systemName: "plus")
-                    .font(.system(size: 24, weight: .semibold))
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(Color("HadithText"))
             }
             .frame(width: 64, height: 64)
@@ -52,7 +52,6 @@ private struct AddBackgroundButton: View {
         .buttonStyle(.plain)
         // Apply matching padding to ensure vertical alignment with CustomBgItem
         .padding(.top, 8)
-        .padding(.trailing, 8)
     }
 }
 
@@ -87,7 +86,7 @@ private struct CustomBgItem: View {
             if isSelected {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.black.opacity(0.3))
+                        .fill(Color.black.opacity(0.4))
                     Image("TickIcon")
                         .resizable()
                         .frame(width: 18, height: 18)
@@ -98,14 +97,13 @@ private struct CustomBgItem: View {
             
             Button(action: onDelete) {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 20))
+                    .font(.system(size: 14))
                     .foregroundColor(.white)
                     .background(Circle().fill(Color.black.opacity(0.6)))
             }
-            .offset(x: 8, y: -8)
+            .offset(x: 6, y: -6)
         }
         .padding(.top, 8)
-        .padding(.trailing, 8)
     }
 }
 
