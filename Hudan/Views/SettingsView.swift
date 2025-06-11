@@ -7,6 +7,7 @@ struct SettingsView: View {
     
     // State to manage paywall presentation
     @State private var showPaywall = false
+    @State private var showCustomBgView = false
     
     var body: some View {
         VStack(spacing: 0,) {
@@ -140,9 +141,11 @@ struct SettingsView: View {
                                 }
                             }
                         } else if settings.backgroundType == .custom {
-                            CustomBgPicker(isFeatureUnlocked: purchaseManager.isFeatureUnlocked) {
+                            CustomBgPicker(isFeatureUnlocked: purchaseManager.isFeatureUnlocked, onSelect: {
+                                showCustomBgView = true
+                            }, onLock: {
                                 showPaywall = true
-                            }
+                            })
                         }
                     }
                     // gap between 2 sections
@@ -171,17 +174,18 @@ struct SettingsView: View {
             InfoView()
         }
         .fullScreenCover(isPresented: $showPaywall) {
-            ZStack {
-                Color.black.opacity(0.4).ignoresSafeArea()
-                PaywallView(
-                    onDismiss: { showPaywall = false },
-                    onPurchaseSuccess: {
-                        purchaseManager.purchase()
-                        showPaywall = false
-                    }
-                )
-            }
+            PaywallView(
+                onDismiss: { showPaywall = false },
+                onPurchaseSuccess: {
+                    purchaseManager.purchase()
+                    showPaywall = false
+                }
+            )
             .presentationBackground(.clear)
+        }
+        .fullScreenCover(isPresented: $showCustomBgView) {
+            CustomBgView(isPresented: $showCustomBgView)
+                .presentationBackground(.clear)
         }
     }
 }
