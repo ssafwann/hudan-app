@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @StateObject private var settings = WidgetSettingsManager.shared
     @ObservedObject private var purchaseManager = PurchaseManager.shared
+    @ObservedObject private var customBgManager = CustomBgManager.shared
     @State private var showInfoView = false
     
     // State to manage paywall presentation
@@ -146,6 +147,11 @@ struct SettingsView: View {
                             }, onLock: {
                                 showPaywall = true
                             })
+
+                            if !customBgManager.savedImages.isEmpty {
+                                CustomBgsRow()
+                                    .padding(.top, 12)
+                            }
                         }
                     }
                     // gap between 2 sections

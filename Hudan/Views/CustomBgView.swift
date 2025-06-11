@@ -100,8 +100,10 @@ struct CustomBgView: View {
     }
     
     private func saveAndDismiss() {
-        // Here we would save the 'selectedImageData' to our App Group storage
-        print("Image data would be saved here.")
+        guard let data = selectedImageData else { return }
+        
+        // Use the manager to save the image
+        CustomBgManager.shared.saveImage(data: data)
         
         // After saving, dismiss the view
         isPresented = false
