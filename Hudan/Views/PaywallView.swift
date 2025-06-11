@@ -73,8 +73,7 @@ struct PaywallView: View {
                 }
                 
                 Button(action: {
-                    // Placeholder for restore action
-                    print("Restore Purchases tapped")
+                    PurchaseManager.shared.restorePurchases()
                 }) {
                     Text("Restore Purchases")
                         .font(.custom("HelveticaNeue-Light", size: 14))
@@ -133,6 +132,6 @@ private struct FeatureView: View {
 #Preview {
     ZStack {
         Color.gray
-        PaywallView(onDismiss: {}, onPurchaseSuccess: {})
+        PaywallView(onDismiss: {}, onPurchaseSuccess: { PurchaseManager.shared.purchase() })
     }
 }

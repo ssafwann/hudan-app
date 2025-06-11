@@ -2,11 +2,11 @@ import SwiftUI
 
 struct SettingsView: View {
     @StateObject private var settings = WidgetSettingsManager.shared
+    @ObservedObject private var purchaseManager = PurchaseManager.shared
     @State private var showInfoView = false
     
-    // State to manage paywall presentation and feature access
+    // State to manage paywall presentation
     @State private var showPaywall = false
-    @State private var isFeatureUnlocked = false
     
     var body: some View {
         VStack(spacing: 0,) {
@@ -140,7 +140,7 @@ struct SettingsView: View {
                                 }
                             }
                         } else if settings.backgroundType == .custom {
-                            CustomBgPicker(isFeatureUnlocked: isFeatureUnlocked) {
+                            CustomBgPicker(isFeatureUnlocked: purchaseManager.isFeatureUnlocked) {
                                 showPaywall = true
                             }
                         }
@@ -176,7 +176,7 @@ struct SettingsView: View {
                 PaywallView(
                     onDismiss: { showPaywall = false },
                     onPurchaseSuccess: {
-                        isFeatureUnlocked = true
+                        purchaseManager.purchase()
                         showPaywall = false
                     }
                 )

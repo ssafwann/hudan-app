@@ -2,7 +2,7 @@ import SwiftUI
 import PhotosUI
 
 struct CustomBgPicker: View {
-    // These values are passed in from the parent view.
+    // This value is now passed in from the parent view.
     let isFeatureUnlocked: Bool
     var onButtonTapped: () -> Void
 
