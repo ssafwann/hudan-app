@@ -16,7 +16,7 @@ struct HeaderView: View {
                     
                     Text(dateString)
                         .font(.custom("HelveticaNeue-Regular", size: 14))
-                        .foregroundColor(Color("LightText"))
+                        .foregroundColor(Color("AppLightText"))
                         .kerning(-0.25)
                 }
                 .padding(.bottom, 8)
@@ -31,7 +31,7 @@ struct HeaderView: View {
                 // Tagline
                 Text("Gain wisdom from the words and actions of our Prophet Muhammad ﷺ")
                     .font(.custom("HelveticaNeue", size: 16))
-                    .foregroundColor(Color("DarkText"))
+                    .foregroundColor(Color("AppDarkText"))
                     .lineLimit(2)
                     .lineSpacing(3)
                     .minimumScaleFactor(0.8)
@@ -46,7 +46,7 @@ struct HeaderView: View {
                 Image("SettingsIcon")
                     .resizable()
                       .frame(width: 18, height: 18)
-                    .foregroundColor(Color("DarkText"))
+                    .foregroundColor(Color("AppDarkText"))
                     .frame(width: 40, height: 40)
                     .background(Color("UBtn"))
                     .cornerRadius(10)

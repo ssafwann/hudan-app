@@ -11,7 +11,7 @@ enum WidgetTextDisplay: String, CaseIterable {
 
 enum WidgetBackgroundType: String, CaseIterable {
     case `default`
-    // case custom // Temporarily commented out to only allow default background type
+    case custom // Temporarily commented out to only allow default background type
 }
 
 private enum WidgetSettingsKey {
@@ -49,10 +49,6 @@ final class WidgetSettingsManager: ObservableObject {
         get {
             guard let rawValue = defaults.string(forKey: WidgetSettingsKey.backgroundType),
                   let value = WidgetBackgroundType(rawValue: rawValue) else {
-                return .default
-            }
-            // If 'custom' was previously saved, treat it as 'default' for now
-            if rawValue == "custom" {
                 return .default
             }
             return value

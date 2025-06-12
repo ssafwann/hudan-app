@@ -55,7 +55,7 @@ struct InfoView: View {
                                /*
                                 Text("The only paid feature in Hudan is the ability to set your own custom image as the widget background. This optional customization is available for a one-time, nominal fee of $5.99.")
                                     .font(subtextParagraphFont)
-                                    .foregroundColor(Color("DarkText"))
+                                    .foregroundColor(Color("AppDarkText"))
                                     .lineSpacing(4)
                                 */
                             }
@@ -119,7 +119,7 @@ struct InfoView: View {
                             Image("chev")
                                 .resizable()
                                 .frame(width: 28, height: 28)
-                                .foregroundColor(Color("DarkText"))
+                                .foregroundColor(Color("AppDarkText"))
                         }
                     }
                 }

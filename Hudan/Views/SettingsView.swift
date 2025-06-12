@@ -2,7 +2,13 @@ import SwiftUI
 
 struct SettingsView: View {
     @StateObject private var settings = WidgetSettingsManager.shared
+    @ObservedObject private var purchaseManager = PurchaseManager.shared
+    @ObservedObject private var customBgManager = CustomBgManager.shared
     @State private var showInfoView = false
+    
+    // State to manage paywall presentation
+    @State private var showPaywall = false
+    @State private var showCustomBgView = false
     
     var body: some View {
         VStack(spacing: 0,) {
@@ -30,7 +36,7 @@ struct SettingsView: View {
             .padding(.horizontal)
             .padding(.top, 35)
             .padding(.bottom, 20)
-            .background(Color("White"))
+            .background(Color("AppWhite"))
             
             Divider()
             
@@ -40,7 +46,7 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Hadith Text")
                             .font(.custom("HelveticaNeue-Medium", size: 12))
-                            .foregroundStyle(Color("DarkText"))
+                            .foregroundStyle(Color("AppDarkText"))
                             .kerning(-0.25)
 
 
@@ -56,13 +62,13 @@ struct SettingsView: View {
                                         .padding(.vertical, 10)
                                         .background(
                                             RoundedRectangle(cornerRadius: 14)
-                                                .fill(settings.textDisplay == option ? Color("SecondaryGreen") : Color("White"))
+                                                .fill(settings.textDisplay == option ? Color("SecondaryGreen") : Color("AppWhite"))
                                                 .overlay(
                                                     RoundedRectangle(cornerRadius: 14)
                                                         .stroke(settings.textDisplay == option ? Color.clear : Color("BtnBorder"), lineWidth: 2)
                                                 )
                                         )
-                                        .foregroundColor(settings.textDisplay == option ? .white : .primary)
+                                        .foregroundColor(settings.textDisplay == option ? .white : Color("HadithText"))
                                 }
                                 .buttonStyle(.borderless)
                             }
@@ -74,62 +80,90 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Background")
                             .font(.custom("HelveticaNeue-Medium", size: 12))
-                            .foregroundStyle(Color("DarkText"))
+                            .foregroundStyle(Color("AppDarkText"))
                             .kerning(-0.25)
                         
-                        /* // Temporarily commented out the background type selection buttons
-                        HStack(spacing: 8) {
+                        HStack(spacing: 12) {
                             ForEach(WidgetBackgroundType.allCases, id: \.self) { option in
                                 Button(action: {
                                     settings.backgroundType = option
                                 }) {
                                     Text(option.rawValue.capitalized)
-                                        .font(.system(size: 17))
+                                        .font(.custom("HelveticaNeue-Medium", size: 12))
+                                        .kerning(-0.5)
                                         .frame(maxWidth: .infinity)
-                                        .padding(.vertical, 12)
+                                        .padding(.vertical, 10)
                                         .background(
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(settings.backgroundType == option ? Color("SecondaryGreen") : Color(.systemGray6))
+                                            RoundedRectangle(cornerRadius: 14)
+                                                .fill(settings.backgroundType == option ? Color("SecondaryGreen") : Color("AppWhite"))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 14)
+                                                        .stroke(settings.backgroundType == option ? Color.clear : Color("BtnBorder"), lineWidth: 2)
+                                                )
                                         )
-                                        .foregroundColor(settings.backgroundType == option ? .white : .primary)
+                                        .foregroundColor(settings.backgroundType == option ? .white : Color("HadithText"))
                                 }
                                 .buttonStyle(.borderless)
                             }
                         }
-                        */
                         
-                        // if settings.backgroundType == .default { // Show image selection when .default is selected
-                        // Since .default is now the only background mode, always show the image selection.
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(0..<WidgetBackgroundManager.backgroundImages.count, id: \.self) { index in
-                                    Button(action: {
-                                        settings.selectedBackgroundIndex = index
-                                    }) {
-                                        Image("bg\(index + 1)")
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(width: 64, height: 64)
-                                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                                            .overlay(
-                                                ZStack {
-                                                    // Universal border for all states
-                                                    RoundedRectangle(cornerRadius: 8)
-                                                        .stroke(Color("LightText"), lineWidth: 1)
-
-                                                    if settings.selectedBackgroundIndex == index {
+                        // Show image selection only for .default background type
+                        if settings.backgroundType == .default {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    ForEach(0..<WidgetBackgroundManager.backgroundImages.count, id: \.self) { index in
+                                        Button(action: {
+                                            settings.selectedBackgroundIndex = index
+                                        }) {
+                                            Image("bg\(index + 1)")
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: 64, height: 64)
+                                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                                .overlay(
+                                                    ZStack {
+                                                        // Universal border for all states
                                                         RoundedRectangle(cornerRadius: 8)
-                                                            .fill(Color.black.opacity(0.3)) // Slight dim for better checkmark visibility
-                                                        Image("TickIcon")
-                                                            .resizable()
-                                                            .frame(width: 18, height: 18)          
-                                                            .foregroundColor(.white)
-                                                    } 
-                                                    // Removed 'else' branch for unselected border as it's now universal
-                                                }
-                                            )
+                                                            .stroke(Color("AppLightText"), lineWidth: 1)
+
+                                                        if settings.selectedBackgroundIndex == index {
+                                                            RoundedRectangle(cornerRadius: 8)
+                                                                .fill(Color.black.opacity(0.4)) // Slight dim for better checkmark visibility
+                                                            Image("TickIcon")
+                                                                .resizable()
+                                                                .frame(width: 18, height: 18)          
+                                                                .foregroundColor(.white)
+                                                        } 
+                                                        // Removed 'else' branch for unselected border as it's now universal
+                                                    }
+                                                )
+                                        }
                                     }
                                 }
+                            }
+                        } else if settings.backgroundType == .custom {
+                            if purchaseManager.isFeatureUnlocked {
+                                // If the feature is unlocked, show the new row with the integrated Add button.
+                                CustomBgRow(
+                                    onAdd: { showCustomBgView = true }
+                                )
+                            } else {
+                                // If the feature is locked, show the old unlock button.
+                                Button(action: { showPaywall = true }) {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "lock.fill")
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(Color("PrimaryGreen"))
+                                        Text("Unlock custom features")
+                                    }
+                                    .font(.custom("HelveticaNeue-Medium", size: 12))
+                                    .foregroundColor(Color("HadithText"))
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 30)
+                                    .background(Color("CustomBgBtn"))
+                                    .cornerRadius(14)
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
                     }
@@ -138,25 +172,45 @@ struct SettingsView: View {
                 } header: {
                     Text("WIDGET")
                         .font(.custom("HelveticaNeue-Medium", size: 14))
-                        .foregroundColor(Color("LightText"))
+                        .foregroundColor(Color("AppLightText"))
                         .kerning(0.25)
                         .padding(.top, 20)
 
                 }
                 .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-                .listRowBackground(Color("White"))
+                .listRowBackground(Color("AppWhite"))
                 .listRowSeparator(.hidden)
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
             .environment(\.defaultMinListHeaderHeight, 30)
         }
-        .background(Color("White").edgesIgnoringSafeArea(.all))
+        .background(Color("AppWhite").edgesIgnoringSafeArea(.all))
         // sheet height
         .presentationCornerRadius(24)
         .presentationDragIndicator(.visible)
         .fullScreenCover(isPresented: $showInfoView) {
             InfoView()
+        }
+        .fullScreenCover(isPresented: $showPaywall) {
+            ZStack {
+                Color.black.opacity(0.4).ignoresSafeArea()
+                PaywallView(
+                    onDismiss: { showPaywall = false },
+                    onPurchaseSuccess: {
+                        purchaseManager.purchase()
+                        showPaywall = false
+                    }
+                )
+            }
+            .presentationBackground(.clear)
+        }
+        .fullScreenCover(isPresented: $showCustomBgView) {
+            ZStack {
+                Color.black.opacity(0.4).ignoresSafeArea()
+                CustomBgView(isPresented: $showCustomBgView)
+            }
+            .presentationBackground(.clear)
         }
     }
 }
