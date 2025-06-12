@@ -90,7 +90,7 @@ struct CustomBgView: View {
         .padding(.horizontal, 25)
         .padding(.bottom, 40)
         .padding(.top, 25)
-        .background(Color("White"))
+        .background(Color("AppWhite"))
         .cornerRadius(20)
         .shadow(radius: 10)
         .padding(.horizontal, 20)
