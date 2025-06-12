@@ -77,7 +77,7 @@ struct PaywallView: View {
                 }) {
                     Text("Restore Purchases")
                         .font(.custom("HelveticaNeue-Light", size: 14))
-                        .foregroundColor(Color("DarkText"))
+                        .foregroundColor(Color("AppDarkText"))
                         .tracking(0.6)
 
                 }
@@ -87,7 +87,7 @@ struct PaywallView: View {
         .padding(.horizontal, 25)
         .padding(.bottom, 40)
         .padding(.top, 25)
-        .background(Color("White"))
+        .background(Color("AppWhite"))
         .cornerRadius(20)
         .shadow(radius: 10)
         .padding(.horizontal, 20)

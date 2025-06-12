@@ -78,7 +78,7 @@ private struct CustomBgItem: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color("LightText"), lineWidth: 1)
+                        .stroke(Color("AppLightText"), lineWidth: 1)
                 )
             }
             .buttonStyle(.plain)

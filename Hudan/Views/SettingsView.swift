@@ -36,7 +36,7 @@ struct SettingsView: View {
             .padding(.horizontal)
             .padding(.top, 35)
             .padding(.bottom, 20)
-            .background(Color("White"))
+            .background(Color("AppWhite"))
             
             Divider()
             
@@ -46,7 +46,7 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Hadith Text")
                             .font(.custom("HelveticaNeue-Medium", size: 12))
-                            .foregroundStyle(Color("DarkText"))
+                            .foregroundStyle(Color("AppDarkText"))
                             .kerning(-0.25)
 
 
@@ -62,7 +62,7 @@ struct SettingsView: View {
                                         .padding(.vertical, 10)
                                         .background(
                                             RoundedRectangle(cornerRadius: 14)
-                                                .fill(settings.textDisplay == option ? Color("SecondaryGreen") : Color("White"))
+                                                .fill(settings.textDisplay == option ? Color("SecondaryGreen") : Color("AppWhite"))
                                                 .overlay(
                                                     RoundedRectangle(cornerRadius: 14)
                                                         .stroke(settings.textDisplay == option ? Color.clear : Color("BtnBorder"), lineWidth: 2)
@@ -80,7 +80,7 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Background")
                             .font(.custom("HelveticaNeue-Medium", size: 12))
-                            .foregroundStyle(Color("DarkText"))
+                            .foregroundStyle(Color("AppDarkText"))
                             .kerning(-0.25)
                         
                         HStack(spacing: 12) {
@@ -95,7 +95,7 @@ struct SettingsView: View {
                                         .padding(.vertical, 10)
                                         .background(
                                             RoundedRectangle(cornerRadius: 14)
-                                                .fill(settings.backgroundType == option ? Color("SecondaryGreen") : Color("White"))
+                                                .fill(settings.backgroundType == option ? Color("SecondaryGreen") : Color("AppWhite"))
                                                 .overlay(
                                                     RoundedRectangle(cornerRadius: 14)
                                                         .stroke(settings.backgroundType == option ? Color.clear : Color("BtnBorder"), lineWidth: 2)
@@ -124,7 +124,7 @@ struct SettingsView: View {
                                                     ZStack {
                                                         // Universal border for all states
                                                         RoundedRectangle(cornerRadius: 8)
-                                                            .stroke(Color("LightText"), lineWidth: 1)
+                                                            .stroke(Color("AppLightText"), lineWidth: 1)
 
                                                         if settings.selectedBackgroundIndex == index {
                                                             RoundedRectangle(cornerRadius: 8)
@@ -172,20 +172,20 @@ struct SettingsView: View {
                 } header: {
                     Text("WIDGET")
                         .font(.custom("HelveticaNeue-Medium", size: 14))
-                        .foregroundColor(Color("LightText"))
+                        .foregroundColor(Color("AppLightText"))
                         .kerning(0.25)
                         .padding(.top, 20)
 
                 }
                 .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-                .listRowBackground(Color("White"))
+                .listRowBackground(Color("AppWhite"))
                 .listRowSeparator(.hidden)
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
             .environment(\.defaultMinListHeaderHeight, 30)
         }
-        .background(Color("White").edgesIgnoringSafeArea(.all))
+        .background(Color("AppWhite").edgesIgnoringSafeArea(.all))
         // sheet height
         .presentationCornerRadius(24)
         .presentationDragIndicator(.visible)

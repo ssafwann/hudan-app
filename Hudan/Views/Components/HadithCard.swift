@@ -59,7 +59,7 @@ struct HadithCard: View {
                     Text("Grade: \(hadith.grade)")
                 }
                 .font(.custom("HelveticaNeue", size: 11))
-                .foregroundStyle(Color("LightText"))
+                .foregroundStyle(Color("AppLightText"))
 
                 Spacer()
 
