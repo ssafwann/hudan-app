@@ -7,7 +7,7 @@ struct InfoView: View {
     private var sectionTitleFont: Font { .custom("HelveticaNeue-Medium", size: 14) }
     private var paragraphFont: Font { .custom("HelveticaNeue", size: 14) }
     private var btnFont: Font { .custom("HelveticaNeue-Medium", size: 14) }
-    private var subtextParagraphFont: Font { .custom("HelveticaNeue-Light", size: 14) }
+    private var subtextParagraphFont: Font { .custom("HelveticaNeue-Light", size: 13) }
 
     init() {
         let appearance = UINavigationBarAppearance()
@@ -35,7 +35,7 @@ struct InfoView: View {
                                     .font(sectionTitleFont)
                                     .foregroundStyle(.black)
                                     .tracking(0.4)
-                                Text("Hudan is an app with the intention of provide an easy way for Muslims to implement the words and action of our Prophet Muhammad ﷺ. A daily hadith is shown on both the app & widget, with all content being sourced from Sunnah.com.")
+                                Text("Hudan is an app designed to make it easy for Muslims to implement the words and actions of Prophet Muhammad ﷺ. A new hadith is displayed daily in the app and on the widget, with all content sourced from Sunnah.com.")
                                     .font(paragraphFont)
                                     .foregroundStyle(.black)
                                     .lineSpacing(4)
@@ -47,17 +47,16 @@ struct InfoView: View {
                                     .font(sectionTitleFont)
                                     .foregroundStyle(.black)
                                     .tracking(0.4)
-                                Text("Personalize your widget experience! You can choose from several beautiful default backgrounds provided within the app, and change the text display settings to your likings.")
+                                Text("Personalize your widget experience! Choose from a selection of beautiful default backgrounds, and adjust the text display settings to match your preferences.")
                                     .font(paragraphFont)
                                     .foregroundStyle(.black)
                                     .lineSpacing(4)
                                 
-                               /*
-                                Text("The only paid feature in Hudan is the ability to set your own custom image as the widget background. This optional customization is available for a one-time, nominal fee of $5.99.")
+                                Text("The only paid feature in Hudan is the option to set your own custom image as the widget background. This one-time upgrade is available for just $5.99.")
                                     .font(subtextParagraphFont)
                                     .foregroundColor(Color("AppDarkText"))
                                     .lineSpacing(4)
-                                */
+                                
                             }
                             
                             // FEEDBACK & SUGGESTIONS Section
@@ -66,7 +65,7 @@ struct InfoView: View {
                                     .font(sectionTitleFont)
                                     .foregroundStyle(.black)
                                     .tracking(0.4)
-                                Text("Have ideas on how to improve Hudan? Or came across a bug? Please contact us below.")
+                                Text("Have ideas to improve Hudan or found a bug? We’d love to hear from you, get in touch below.")
                                     .font(paragraphFont)
                                     .foregroundStyle(.black)
                                     .lineSpacing(4)
@@ -79,7 +78,7 @@ struct InfoView: View {
                                     .font(sectionTitleFont)
                                     .foregroundStyle(.black)
                                     .tracking(0.4)
-                                Text("If you find Hudan beneficial, please consider leaving a rating on the App Store. Your support helps others discover the app!")
+                                Text("If you’ve found Hudan beneficial, consider leaving a rating on the App Store. Your support helps others discover the app!")
                                     .font(paragraphFont)
                                     .foregroundStyle(.black)
                                     .lineSpacing(4)
@@ -92,7 +91,7 @@ struct InfoView: View {
                                     .font(sectionTitleFont)
                                     .foregroundStyle(.black)
                                     .tracking(0.4)
-                                Text("Hudan is built with care by me, Malik Safwan. To see more of my work or to connect with me, check out my Twitter.")
+                                Text("Hudan is built with care by me, Malik Safwan. To see more of my work or get in touch, you can find me on Twitter.")
                                     .font(paragraphFont)
                                     .foregroundStyle(.black)
                                     .lineSpacing(4)
